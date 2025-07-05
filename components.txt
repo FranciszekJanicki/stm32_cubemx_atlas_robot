@@ -1,0 +1,1 @@
+git@github.com:FranciszekJanicki/atlas_core.git atlas_core

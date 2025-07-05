@@ -1,0 +1,3 @@
+[submodule "components/atlas_core"]
+	path = components/atlas_core
+	url = git@github.com:FranciszekJanicki/atlas_core.git
