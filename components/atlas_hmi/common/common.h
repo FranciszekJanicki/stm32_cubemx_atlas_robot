@@ -2,7 +2,7 @@
 #define COMMON_COMMON_H
 
 #include "atlas_core.h"
-#include "button.h"
+#include "button_data.h"
 #include "event.h"
 #include "manager.h"
 #include "notify.h"
