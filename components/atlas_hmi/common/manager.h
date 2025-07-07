@@ -11,7 +11,7 @@
 typedef enum {
     TASK_TYPE_SYSTEM,
     TASK_TYPE_PACKET,
-    TASK_TYPE_HMI,
+    TASK_TYPE_UI,
     TASK_TYPE_SD,
     TASK_TYPE_NUM,
 } TaskType_t;
@@ -19,7 +19,7 @@ typedef enum {
 typedef enum {
     QUEUE_TYPE_SYSTEM,
     QUEUE_TYPE_PACKET,
-    QUEUE_TYPE_HMI,
+    QUEUE_TYPE_UI,
     QUEUE_TYPE_SD,
     QUEUE_TYPE_NUM,
 } QueueType_t;

@@ -1,4 +1,7 @@
 add_subdirectory(common)
+add_subdirectory(ui_task)
+add_subdirectory(system_task)
+add_subdirectory(packet_task)
 
 add_library(atlas_hmi INTERFACE)
 

@@ -1,8 +1,117 @@
 #ifndef COMMON_EVENT_H
 #define COMMON_EVENT_H
 
+#include "button.h"
 #include "common.h"
 #include "sd.h"
+
+typedef enum {
+    SYSTEM_EVENT_ORIGIN_SD,
+    SYSTEM_EVENT_ORIGIN_UI,
+    SYSTEM_EVENT_ORIGIN_PACKET,
+} system_event_origin_t;
+
+typedef enum {
+    SYSTEM_EVENT_TYPE_JOINTS,
+    SYSTEM_EVENT_TYPE_CARTESIAN,
+    SYSTEM_EVENT_TYPE_LOAD_CONFIG,
+    SYSTEM_EVENT_TYPE_SAVE_CONFIG,
+    SYSTEM_EVENT_TYPE_LOAD_PATH,
+    SYSTEM_EVENT_TYPE_SAVE_PATH,
+    SYSTEM_EVENT_TYPE_START_PATH,
+    SYSTEM_EVENT_TYPE_STOP_PATH,
+    SYSTEM_EVENT_TYPE_START_JOG,
+    SYSTEM_EVENT_TYPE_STOP_JOG,
+} system_event_type_t;
+
+typedef struct {
+    atlas_joints_data_t data;
+} system_event_payload_joints_t;
+
+typedef struct {
+    atlas_cartesian_data_t data;
+} system_event_payload_cartesian_t;
+
+typedef struct {
+} system_event_payload_load_config_t;
+
+typedef struct {
+    atlas_config_t config;
+} system_event_payload_save_config_t;
+
+typedef struct {
+} system_event_payload_load_joints_path_t;
+
+typedef struct {
+    atlas_joints_path_t path;
+} system_event_payload_save_joints_path_t;
+
+typedef struct {
+} system_event_payload_load_cartesian_path_t;
+
+typedef struct {
+    atlas_cartesian_path_t path;
+} system_event_payload_save_cartesian_path_t;
+
+typedef struct {
+} system_event_payload_start_path_t;
+
+typedef struct {
+} system_event_payload_stop_path_t;
+
+typedef union {
+    system_event_payload_joints_t joints;
+    system_event_payload_cartesian_t cartesian;
+    system_event_payload_load_config_t load_config;
+    system_event_payload_save_config_t save_config;
+    system_event_payload_load_path_t load_path;
+    system_event_payload_save_path_t save_path;
+} system_event_payload_t;
+
+typedef struct {
+    system_event_type_t type;
+    system_event_origin_t origin;
+    system_event_payload_t payload;
+} system_event_t;
+
+typedef enum {
+    UI_EVENT_TYPE_START,
+    UI_EVENT_TYPE_STOP,
+    UI_EVENT_TYPE_JOINTS,
+    UI_EVENT_TYPE_CARTESIAN,
+    UI_EVENT_TYPE_BUTTON,
+} ui_event_type_t;
+
+typedef struct {
+} ui_event_payload_start_t;
+
+typedef struct {
+} ui_event_payload_stop_t;
+
+typedef struct {
+    atlas_joints_data_t data;
+} ui_event_payload_joints_t;
+
+typedef struct {
+    atlas_cartesian_data_t data;
+} ui_event_payload_cartesian_t;
+
+typedef struct {
+    button_data_t data;
+} ui_event_payload_button_t;
+
+typedef union {
+    ui_event_payload_start_t start;
+    ui_event_payload_stop_t stop;
+    ui_event_payload_joints_t joints;
+    ui_event_payload_cartesian_t cartesian;
+    ui_event_payload_button_t button;
+} ui_event_payload_t;
+
+typedef struct {
+    ui_event_type_t type;
+    ui_event_payload_t payload;
+} ui_event_t;
 
 typedef enum {
     DISPLAY_EVENT_TYPE_START,
@@ -38,10 +147,32 @@ typedef struct {
 } display_event_t;
 
 typedef enum {
+    BUTTON_EVENT_TYPE_START,
+    BUTTON_EVENT_TYPE_STOP,
+} button_event_type_t;
+
+typedef struct {
+} button_event_payload_start_t;
+
+typedef struct {
+} button_event_payload_stop_t;
+
+typedef union {
+    button_event_payload_start_t start;
+    button_event_payload_stop_t stop;
+} button_event_payload_t;
+
+typedef struct {
+    button_event_type_t type;
+    button_event_payload_t payload;
+} button_event_t;
+
+typedef enum {
     PACKET_EVENT_TYPE_START,
     PACKET_EVENT_TYPE_STOP,
-    PACKET_EVENT_TYPE_JOINTS,
-    PACKET_EVENT_TYPE_CARTESIAN,
+    PACKET_EVENT_TYPE_JOG,
+    PACKET_EVENT_TYPE_PATH,
+    PACKET_EVENT_TYPE_STATE,
 } packet_event_type_t;
 
 typedef struct {
@@ -51,18 +182,23 @@ typedef struct {
 } packet_event_payload_stop_t;
 
 typedef struct {
-    atlas_joints_data_t data;
-} packet_event_payload_joints_t;
+    atlas_jog_t jog;
+} packet_event_payload_jog_t;
 
 typedef struct {
-    atlas_cartesian_data_t data;
-} packet_payload_cartesian_t;
+    atlas_path_t path;
+} packet_event_payload_path_t;
+
+typedef struct {
+    atlas_state_t path;
+} packet_event_payload_state_t;
 
 typedef union {
     packet_event_payload_start_t start;
     packet_event_payload_stop_t stop;
-    packet_event_payload_joints_t joints;
-    packet_event_payload_cartesian_t cartesian;
+    packet_event_payload_jog_t jog;
+    packet_event_payload_path_t path;
+    packet_event_payload_state_t state;
 } packet_event_payload_t;
 
 typedef struct {
@@ -73,14 +209,10 @@ typedef struct {
 typedef enum {
     SD_EVENT_TYPE_START,
     SD_EVENT_TYPE_STOP,
-    SD_EVENT_TYPE_LS_DIR,
-    SD_EVENT_TYPE_CAT_FILE,
     SD_EVENT_TYPE_LOAD_CONFIG,
     SD_EVENT_TYPE_SAVE_CONFIG,
-    SD_EVENT_TYPE_LOAD_JOINTS_PATH,
-    SD_EVENT_TYPE_SAVE_JOINTS_PATH,
-    SD_EVENT_TYPE_LOAD_CARTESIAN_PATH,
-    SD_EVENT_TYPE_SAVE_CARTESIAN_PATH,
+    SD_EVENT_TYPE_LOAD_PATH,
+    SD_EVENT_TYPE_SAVE_PATH,
 } sd_event_type_t;
 
 typedef struct {
@@ -88,14 +220,6 @@ typedef struct {
 
 typedef struct {
 } sd_event_payload_stop_t;
-
-typedef struct {
-    sd_path_t sd_path;
-} sd_event_payload_ls_dir_t;
-
-typedef struct {
-    sd_path_t sd_path;
-} sd_event_payload_cat_file_t;
 
 typedef struct {
     sd_path_t sd_path;
@@ -108,33 +232,20 @@ typedef struct {
 
 typedef struct {
     sd_path_t sd_path;
-} sd_event_payload_load_cartesian_path_t;
+} sd_event_payload_load_path_t;
 
 typedef struct {
     sd_path_t sd_path;
-    atlas_cartesian_path_t path;
-} sd_event_payload_save_cartesian_path_t;
-
-typedef struct {
-    sd_path_t sd_path;
-} sd_event_payload_load_joints_path_t;
-
-typedef struct {
-    sd_path_t sd_path;
-    atlas_joints_path_t path;
-} sd_event_payload_save_joints_path_t;
+    atlas_path_t path;
+} sd_event_payload_save_path_t;
 
 typedef union {
     sd_event_payload_start_t start;
     sd_event_payload_stop_t stop;
-    sd_event_payload_cat_file_t cat_file;
-    sd_event_payload_ls_dir_t ls_dir;
     sd_event_payload_save_config_t save_config;
     sd_event_payload_load_config_t load_config;
-    sd_event_payload_save_joints_path_t save_joints_path;
-    sd_event_payload_load_joints_path_t load_joints_path;
-    sd_event_payload_save_cartesian_path_t save_cartesian_path;
-    sd_event_payload_load_cartesian_path_t load_cartesian_path;
+    sd_event_payload_save_path_t save_path;
+    sd_event_payload_load_path_t load_path;
 } sd_event_payload_t;
 
 typedef struct {

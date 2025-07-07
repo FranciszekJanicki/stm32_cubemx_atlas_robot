@@ -1,0 +1,2 @@
+add_subdirectory(button_task)
+add_subdirectory(display_task)
