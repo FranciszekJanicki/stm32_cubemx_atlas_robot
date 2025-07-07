@@ -33,8 +33,8 @@ typedef enum {
 } ui_notify_t;
 
 typedef enum {
-    PACKET_NOTIFY_PACKET_READY = (1 << 0),
-    PACKET_NOTIFY_ALL = (PACKET_NOTIFY_PACKET_READY),
+    PACKET_NOTIFY_HMI_PACKET_READY = (1 << 0),
+    PACKET_NOTIFY_ALL = (PACKET_NOTIFY_HMI_PACKET_READY),
 } packet_notify_t;
 
 #endif // COMMON_NOTIFY_H

@@ -4,7 +4,6 @@
 #include "FreeRTOS.h"
 #include "common.h"
 #include "queue.h"
-#include "spi.h"
 #include "stm32l476xx.h"
 #include "stm32l4xx_hal.h"
 #include "task.h"
@@ -13,7 +12,6 @@
 typedef struct {
     bool is_running;
 
-    SPI_HandleTypeDef* spi;
 } packet_manager_t;
 
 atlas_err_t packet_manager_initialize(packet_manager_t* manager);
