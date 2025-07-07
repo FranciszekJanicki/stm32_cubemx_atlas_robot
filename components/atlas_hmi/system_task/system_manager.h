@@ -10,7 +10,7 @@
 typedef struct {
     bool is_running;
 
-    atlas_jog_t jog;
+    atlas_data_t data;
     atlas_status_t state;
     atlas_path_t path;
 
