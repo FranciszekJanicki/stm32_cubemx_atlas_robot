@@ -1,7 +1,8 @@
 add_library(display_task STATIC)
 
 target_sources(display_task PRIVATE 
-
+    display_task.c
+    display_manager.c
 )
 
 target_include_directories(display_task PUBLIC
@@ -11,6 +12,7 @@ target_include_directories(display_task PUBLIC
 target_link_libraries(display_task PUBLIC
     common
     stm32cubemx
+    sh1107
 )
 
 target_compile_options(display_task PUBLIC

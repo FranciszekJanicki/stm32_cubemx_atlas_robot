@@ -15,7 +15,7 @@ typedef struct {
     size_t path_index;
 } system_manager_t;
 
-atlas_err_t system_manager_initialize(system_manager_t* manager);
 atlas_err_t system_manager_process(system_manager_t* manager);
+atlas_err_t system_manager_initialize(system_manager_t* manager);
 
 #endif // SYSTEM_TASK_SYSTEM_MANAGER_H

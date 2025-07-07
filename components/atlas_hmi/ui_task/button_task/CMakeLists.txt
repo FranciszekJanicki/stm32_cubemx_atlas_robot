@@ -1,7 +1,8 @@
 add_library(button_task STATIC)
 
 target_sources(button_task PRIVATE 
-
+    button_task.c
+    button_manager.c
 )
 
 target_include_directories(button_task PUBLIC

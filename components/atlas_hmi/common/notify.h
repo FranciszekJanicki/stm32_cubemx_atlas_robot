@@ -15,19 +15,6 @@ typedef enum {
 } kinematics_notify_t;
 
 typedef enum {
-    BUTTON_NOTIFY_OK_PRESS,
-    BUTTON_NOTIFY_BACK_PRESS,
-    BUTTON_NOTIFY_UP_PRESS,
-    BUTTON_NOTIFY_DOWN_PRESS,
-    BUTTON_NOTIFY_ALL = (BUTTON_NOTIFY_OK_PRESS | BUTTON_NOTIFY_BACK_PRESS |
-                         BUTTON_NOTIFY_UP_PRESS | BUTTON_NOTIFY_DOWN_PRESS),
-} button_notify_t;
-
-typedef enum {
-    DISPLAY_NOTIFY_ALL = (1 << 0),
-} display_notify_t;
-
-typedef enum {
     SD_NOTIFY_ALL = (1 << 0),
 } sd_notify_t;
 

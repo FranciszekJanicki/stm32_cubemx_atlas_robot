@@ -14,7 +14,7 @@ typedef struct {
 
 } packet_manager_t;
 
-atlas_err_t packet_manager_initialize(packet_manager_t* manager);
 atlas_err_t packet_manager_process(packet_manager_t* manager);
+atlas_err_t packet_manager_initialize(packet_manager_t* manager);
 
 #endif // PACKET_TASK_PACKET_MANAGER_H

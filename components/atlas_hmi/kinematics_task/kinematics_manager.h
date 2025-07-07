@@ -9,7 +9,7 @@ typedef struct {
 
 } kinematics_manager_t;
 
-atlas_err_t kinematics_manager_initialize(kinematics_manager_t* manager);
 atlas_err_t kinematics_manager_process(kinematics_manager_t* manager);
+atlas_err_t kinematics_manager_initialize(kinematics_manager_t* manager);
 
 #endif // KINEMATICS_MANAGER_KINEMATICS_MANAGER_H
