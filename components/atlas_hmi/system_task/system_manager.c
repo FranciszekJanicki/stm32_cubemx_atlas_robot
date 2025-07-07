@@ -3,7 +3,6 @@
 #include "common.h"
 #include "queue.h"
 #include "task.h"
-#include "tim.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -255,13 +254,15 @@ static atlas_err_t system_manager_event_start_path_handler(
         return ATLAS_ERR_NOT_RUNNING;
     }
 
-    if (manager->is_path_running) {
-        ATLAS_LOG(TAG, "path already running!");
-        return ATLAS_ERR_FAIL;
+    switch (manager->status.state) {
+        case ATLAS_STATE_IDLE: {
+            manager->status.state = ATLAS_STATE_PATH;
+            manager->joints_path_index = 0U;
+        }
+        case ATLAS_STATE_JOG: {
+            return ATLAS_ERR_
+        }
     }
-
-    manager->is_path_running = true;
-    manager->joints_path_index = 0U;
 
     return ATLAS_ERR_OK;
 }
@@ -283,7 +284,8 @@ static atlas_err_t system_manager_event_stop_path_handler(
     }
 
     manager->is_path_running = false;
-    manager->joints_path_index = 0U;
+    manager->status.state = ATLAS_STATE_IDLE;
+    manager->path_index = 0U;
 
     return ATLAS_ERR_OK;
 }
@@ -295,33 +297,40 @@ static atlas_err_t system_manager_event_handler(system_manager_t* manager,
 
     switch (event->type) {
         case SYSTEM_EVENT_TYPE_JOINTS: {
-            return (event->origin == SYSTEM_EVENT_ORIGIN_JOINTS)
-                       ? system_manager_event_joints_measurement_handler(manager,
-                                                                         &event->payload.joints)
-                       : system_manager_event_joints_reference_handler(manager,
-                                                                       &event->payload.joints);
+            return system_manager_event_joints_handler(manager, &event->payload.joints);
         }
         case SYSTEM_EVENT_TYPE_CARTESIAN: {
-            return (event->origin == SYSTEM_EVENT_ORIGIN_KINEMATICS)
-                       ? system_manager_event_cartesian_calculated_handler(
-                             manager,
-                             &event->payload.cartesian)
-                       : system_manager_event_cartesian_reference_handler(
-                             manager,
-                             &event->payload.cartesian);
+            return system_manager_event_cartesian_handler(manager, &event->payload.cartesian);
         }
-        case SYSTEM_EVENT_TYPE_JOINTS_PATH: {
-            return system_manager_event_joints_path_handler(manager, &event->payload.joints_path);
+        case SYSTEM_EVENT_TYPE_JOG: {
+            return system_manager_event_jog_handler(manager, &event->payload.jog);
         }
-        case SYSTEM_EVENT_TYPE_CARTESIAN_PATH: {
-            return system_manager_event_cartesian_path_handler(manager,
-                                                               &event->payload.cartesian_path);
+        case SYSTEM_EVENT_TYPE_PATH: {
+            return system_manager_event_path_handler(manager, &event->payload.path);
         }
         case SYSTEM_EVENT_TYPE_START_PATH: {
             return system_manager_event_start_path_handler(manager, &event->payload.start_path);
         }
         case SYSTEM_EVENT_TYPE_STOP_PATH: {
             return system_manager_event_stop_path_handler(manager, &event->payload.stop_path);
+        }
+        case SYSTEM_EVENT_TYPE_START_JOG: {
+            return system_manager_event_start_jog_handler(manager, &event->payload.start_jog);
+        }
+        case SYSTEM_EVENT_TYPE_STOP_JOG: {
+            return system_manager_event_stop_jog_handler(manager, &event->payload.stop_jog);
+        }
+        case SYSTEM_EVENT_TYPE_LOAD_CONFIG: {
+            return system_manager_event_load_config_handler(manager, &event->payload.load_config);
+        }
+        case SYSTEM_EVENT_TYPE_SAVE_CONFIG: {
+            return system_manager_event_save_config_handler(manager, &event->payload.save_config);
+        }
+        case SYSTEM_EVENT_TYPE_LOAD_PATH: {
+            return system_manager_event_load_path_handler(manager, &event->payload.load_path);
+        }
+        case SYSTEM_EVENT_TYPE_SAVE_PATH: {
+            return system_manager_event_save_path_handler(manager, &event->payload.save_path);
         }
         default: {
             return ATLAS_ERR_UNKNOWN_EVENT;
@@ -352,10 +361,14 @@ atlas_err_t system_manager_initialize(system_manager_t* manager)
 {
     ATLAS_ASSERT(manager);
 
-    manager->is_running = true;
-    manager->joints_path_index = 0U;
+    memset(&manager->path, 0, sizeof(manager->path));
+    memset(&manager->jog, 0, sizeof(manager->jog));
+    memset(&manager->state, 0, sizeof(manager->state));
 
-    memset(&manager->joints_path, 0, sizeof(manager->joints_path));
+    manager->is_running = true;
+    manager->state.state = ATLAS_STATE_IDLE;
+    manager->state.timestamp = 0U;
+    manager->path_index = 0U;
 
     return ATLAS_ERR_OK;
 }

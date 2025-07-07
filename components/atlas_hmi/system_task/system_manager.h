@@ -4,18 +4,17 @@
 #include "FreeRTOS.h"
 #include "common.h"
 #include "queue.h"
-#include "spi.h"
-#include "stm32l476xx.h"
-#include "stm32l4xx_hal.h"
 #include "task.h"
 #include <stdbool.h>
 
 typedef struct {
     bool is_running;
-    bool is_path_running;
 
-    atlas_joints_path_t joints_path;
-    size_t joints_path_index;
+    atlas_jog_t jog;
+    atlas_status_t state;
+    atlas_path_t path;
+
+    size_t path_index;
 } system_manager_t;
 
 atlas_err_t system_manager_initialize(system_manager_t* manager);
