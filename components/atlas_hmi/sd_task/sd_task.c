@@ -1,8 +1,8 @@
 #include "sd_task.h"
 #include "FreeRTOS.h"
 #include "common.h"
-#include "sd_manager.h"
 #include "queue.h"
+#include "sd_manager.h"
 #include "task.h"
 #include <stdint.h>
 
@@ -32,12 +32,12 @@ void sd_task_initialize(void)
     static StackType_t sd_task_stack[SD_TASK_STACK_DEPTH];
 
     TaskHandle_t sd_task = xTaskCreateStatic(sd_task_func,
-                                                 "sd_task",
-                                                 SD_TASK_STACK_DEPTH,
-                                                 NULL,
-                                                 SD_TASK_PRIORITY,
-                                                 sd_task_stack,
-                                                 &sd_task_buffer);
+                                             "sd_task",
+                                             SD_TASK_STACK_DEPTH,
+                                             NULL,
+                                             SD_TASK_PRIORITY,
+                                             sd_task_stack,
+                                             &sd_task_buffer);
 
     task_manager_set(TASK_TYPE_SD, sd_task);
 }
@@ -47,10 +47,8 @@ void sd_queue_initialize(void)
     static StaticQueue_t sd_queue_buffer;
     static uint8_t sd_queue_storage[SD_QUEUE_STORAGE_SIZE];
 
-    QueueHandle_t sd_queue = xQueueCreateStatic(SD_QUEUE_ITEMS,
-                                                    SD_QUEUE_ITEM_SIZE,
-                                                    sd_queue_storage,
-                                                    &sd_queue_buffer);
+    QueueHandle_t sd_queue =
+        xQueueCreateStatic(SD_QUEUE_ITEMS, SD_QUEUE_ITEM_SIZE, sd_queue_storage, &sd_queue_buffer);
 
     queue_manager_set(QUEUE_TYPE_SD, sd_queue);
 }

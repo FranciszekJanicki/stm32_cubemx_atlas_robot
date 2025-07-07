@@ -3,7 +3,6 @@
 #include "common.h"
 #include "queue.h"
 #include "task.h"
-#include "tim.h"
 #include <stdint.h>
 
 static char const* const TAG = "sd_manager";
@@ -36,7 +35,7 @@ static inline bool sd_manager_receive_sd_notify(sd_notify_t* notify)
 {
     ATLAS_ASSERT(notify);
 
-    return xTaskNotifyWait(0, PACKET_NOTIFY_ALL, (uint32_t*)notify, pdMS_TO_TICKS(1)) == pdPASS;
+    return xTaskNotifyWait(0, SD_NOTIFY_ALL, (uint32_t*)notify, pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static atlas_err_t sd_manager_notify_handler(sd_manager_t* manager, sd_notify_t notify)

@@ -8,25 +8,32 @@
 
 static char const* const TAG = "system_manager";
 
-static inline bool system_manager_receive_send_packet_notify(packet_notify_t notify)
+static inline bool system_manager_send_packet_notify(packet_notify_t notify)
 {
     ATLAS_ASSERT(notify);
 
     return xTaskNotify(task_manager_get(TASK_TYPE_PACKET), notify, eSetBits) == pdPASS;
 }
 
-static inline bool system_manager_receive_send_ui_notify(ui_notify_t notify)
+static inline bool system_manager_send_ui_notify(ui_notify_t notify)
 {
     ATLAS_ASSERT(notify);
 
     return xTaskNotify(task_manager_get(TASK_TYPE_UI), notify, eSetBits) == pdPASS;
 }
 
-static inline bool system_manager_receive_send_sd_notify(sd_notify_t notify)
+static inline bool system_manager_send_sd_notify(sd_notify_t notify)
 {
     ATLAS_ASSERT(notify);
 
     return xTaskNotify(task_manager_get(TASK_TYPE_SD), notify, eSetBits) == pdPASS;
+}
+
+static inline bool system_manager_send_kinematics_notify(kinematics_notify_t notify)
+{
+    ATLAS_ASSERT(notify);
+
+    return xTaskNotify(task_manager_get(TASK_TYPE_KINEMATICS), notify, eSetBits) == pdPASS;
 }
 
 static inline bool system_manager_receive_system_notify(system_notify_t* notify)
@@ -60,6 +67,13 @@ static inline bool system_manager_send_sd_event(sd_event_t const* event)
     ATLAS_ASSERT(event);
 
     return xQueueSend(queue_manager_get(QUEUE_TYPE_SD), event, pdMS_TO_TICKS(1)) == pdPASS;
+}
+
+static inline bool system_manager_send_kinematics_event(kinematics_event_t const* event)
+{
+    ATLAS_ASSERT(event);
+
+    return xQueueSend(queue_manager_get(QUEUE_TYPE_KINEMATICS), event, pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static inline bool system_manager_receive_system_event(system_event_t* event)
@@ -128,8 +142,8 @@ static atlas_err_t system_manager_notify_handler(system_manager_t* manager, syst
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t system_manager_event_data_handler(system_manager_t* manager,
-                                                     system_event_payload_data_t const* data)
+static atlas_err_t system_manager_event_jog_data_handler(system_manager_t* manager,
+                                                         system_event_payload_data_t const* data)
 {
     ATLAS_ASSERT(manager && data);
     ATLAS_LOG_FUNC(TAG);
@@ -138,11 +152,42 @@ static atlas_err_t system_manager_event_data_handler(system_manager_t* manager,
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
-    packet_event_t event = {.type = PACKET_EVENT_TYPE_DATA};
-    event.payload.data.data = data->data;
+    if (data->type == ATLAS_DATA_TYPE_JOINTS) {
+        manager->data = data->payload.joints_data;
+    } else {
+        kinematics_event_t event = {.type = KINEMATICS_EVENT_TYPE_DATA};
+        event.payload.data.type = ATLAS_DATA_TYPE_CARTESIAN;
+        event.payload.data.payload.cartesian_data = data->payload.cartesian_data;
 
-    if (!system_manager_send_packet_event(&event)) {
-        return ATLAS_ERR_FAIL;
+        if (!system_manager_send_kinematics_event(&event)) {
+            return ATLAS_ERR_FAIL;
+        }
+    }
+
+    return ATLAS_ERR_OK;
+}
+
+static atlas_err_t system_manager_event_measured_data_handler(
+    system_manager_t* manager,
+    system_event_payload_data_t const* data)
+{
+    ATLAS_ASSERT(manager && data);
+    ATLAS_LOG_FUNC(TAG);
+
+    if (manager->state != ATLAS_STATE_PATH) {
+        return ATLAS_ERR_IMPROPER_STATE;
+    }
+
+    if (data->type == ATLAS_DATA_TYPE_JOINTS) {
+        if (atlas_is_joints_data_equal(&manager->path.points[manager->path_index],
+                                       &data->payload.joints_data)) {
+            if (manager->path_index + 1U == ATLAS_JOINTS_PATH_MAX_POINTS) {
+                manager->state = ATLAS_STATE_IDLE;
+                manager->path_index = 0U;
+            } else {
+                ++manager->path_index;
+            }
+        }
     }
 
     return ATLAS_ERR_OK;
@@ -154,13 +199,18 @@ static atlas_err_t system_manager_event_path_handler(system_manager_t* manager,
     ATLAS_ASSERT(manager && path);
     ATLAS_LOG_FUNC(TAG);
 
-    if (path->type == ATLAS_PATH_TYPE_JOINTS) {
-        manager->path = *path;
-    } else {
-        packet_event_t event = {.type = PACKET_EVENT_TYPE_PATH};
-        event.payload.path = path->path;
+    if (manager->state != ATLAS_STATE_IDLE) {
+        return ATLAS_ERR_FAIL;
+    }
 
-        if (!system_manager_send_packet_event(&event)) {
+    if (path->type == ATLAS_PATH_TYPE_JOINTS) {
+        manager->path = path->payload.joints_path;
+    } else {
+        kinematics_event_t event = {.type = KINEMATICS_EVENT_TYPE_PATH};
+        event.payload.path.type = ATLAS_PATH_TYPE_CARTESIAN;
+        event.payload.path.payload.cartesian_path = path->payload.cartesian_path;
+
+        if (!system_manager_send_kinematics_event(&event)) {
             return ATLAS_ERR_FAIL;
         }
     }
@@ -294,7 +344,17 @@ static atlas_err_t system_manager_event_handler(system_manager_t* manager,
 
     switch (event->type) {
         case SYSTEM_EVENT_TYPE_DATA: {
-            return system_manager_event_data_handler(manager, &event->payload.data);
+            switch (event->origin) {
+                case SYSTEM_EVENT_ORIGIN_PACKET: {
+                    system_manager_event_measured_data_handler(manager, &event->payload.data);
+                }
+                case SYSTEM_EVENT_ORIGIN_UI: {
+                    system_manager_event_jog_data_handler(manager, &event->payload.data);
+                }
+                default: {
+                    return ATLAS_ERR_UNKNOWN_ORIGIN;
+                }
+            }
         }
         case SYSTEM_EVENT_TYPE_PATH: {
             return system_manager_event_path_handler(manager, &event->payload.path);

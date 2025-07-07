@@ -270,7 +270,7 @@ static atlas_err_t packet_manager_event_stop_jog_handler(
     }
 
     atlas_rob_packet_t packet = {.type = ATLAS_ROB_PACKET_TYPE_STOP_JOG};
-    packet.payload.stop_jog = stop_jog;
+    packet.payload.stop_jog = *stop_jog;
 
     if (!packet_manager_send_rob_packet(manager, &packet)) {
         return ATLAS_ERR_FAIL;

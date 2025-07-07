@@ -8,7 +8,8 @@
 typedef enum {
     SYSTEM_EVENT_ORIGIN_KINEMATICS,
     SYSTEM_EVENT_ORIGIN_PACKET,
-    SYSTEM_EVENT_ORIGIN_JOINTS,
+    SYSTEM_EVENT_ORIGIN_SD,
+    SYSTEM_EVENT_ORIGIN_UI,
 } system_event_origin_t;
 
 typedef enum {
@@ -19,7 +20,7 @@ typedef enum {
     SYSTEM_EVENT_TYPE_START_JOG,
     SYSTEM_EVENT_TYPE_STOP_JOG,
     SYSTEM_EVENT_TYPE_SAVE_PATH,
-    SYSTEM_EVENT_TYPE_LOAD_PATH
+    SYSTEM_EVENT_TYPE_LOAD_PATH,
 } system_event_type_t;
 
 typedef atlas_data_t system_event_payload_data_t;
@@ -55,6 +56,30 @@ typedef struct {
     system_event_type_t type;
     system_event_payload_t payload;
 } system_event_t;
+
+typedef enum {
+    KINEMATICS_EVENT_TYPE_START,
+    KINEMATICS_EVENT_TYPE_STOP,
+    KINEMATICS_EVENT_TYPE_DATA,
+    KINEMATICS_EVENT_TYPE_PATH,
+} kinematics_event_type_t;
+
+typedef int kinematics_event_payload_start_t;
+typedef int kinematics_event_payload_stop_t;
+typedef atlas_data_t kinematics_event_payload_data_t;
+typedef atlas_path_t kinematics_event_payload_path_t;
+
+typedef union {
+    kinematics_event_payload_start_t start;
+    kinematics_event_payload_stop_t stop;
+    kinematics_event_payload_data_t data;
+    kinematics_event_payload_path_t path;
+} kinematics_event_payload_t;
+
+typedef struct {
+    kinematics_event_type_t type;
+    kinematics_event_payload_t payload;
+} kinematics_event_t;
 
 typedef enum {
     UI_EVENT_TYPE_START,
