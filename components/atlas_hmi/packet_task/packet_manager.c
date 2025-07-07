@@ -55,8 +55,8 @@ static inline bool packet_manager_receive_packet(packet_manager_t* manager, atla
     return true;
 }
 
-static atlas_err_t packet_manager_packet_joints_handler(packet_manager_t* manager,
-                                                        atlas_packet_payload_joints_t const* joints)
+static atlas_err_t packet_manager_packet__handler(packet_manager_t* manager,
+                                                        atlas_packet_payload_cartesian_t const* joints)
 {
     ATLAS_ASSERT(manager && joints);
     ATLAS_LOG_FUNC(TAG);
