@@ -1,5 +1,5 @@
-#ifndef COMMON_BUTTON_DATA_H
-#define COMMON_BUTTON_DATA_H
+#ifndef COMMON_BUTTON_H
+#define COMMON_BUTTON_H
 
 typedef enum {
     BUTTON_TYPE_OK,
@@ -17,6 +17,6 @@ typedef enum {
 typedef struct {
     button_type_t type;
     button_press_t press;
-} button_data_t;
+} button_t;
 
-#endif // COMMON_BUTTON_DATA_H
+#endif // COMMON_BUTTON_H

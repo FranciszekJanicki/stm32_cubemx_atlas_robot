@@ -6,10 +6,8 @@ typedef enum {
     BUTTON_EVENT_TYPE_STOP,
 } button_event_type_t;
 
-typedef struct {
-} button_event_payload_start_t;
-typedef struct {
-} button_event_payload_stop_t;
+typedef int button_event_payload_start_t;
+typedef int button_event_payload_stop_t;
 
 typedef union {
     button_event_payload_start_t start;

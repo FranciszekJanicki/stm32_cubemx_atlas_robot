@@ -8,11 +8,9 @@ typedef enum {
     DISPLAY_EVENT_TYPE_CARTESIAN_DATA,
 } display_event_type_t;
 
-typedef struct {
-} display_event_payload_start_t;
+typedef int display_event_payload_start_t;
 
-typedef struct {
-} display_event_payload_stop_t;
+typedef int display_event_payload_stop_t;
 
 typedef struct {
     atlas_joints_data_t data;

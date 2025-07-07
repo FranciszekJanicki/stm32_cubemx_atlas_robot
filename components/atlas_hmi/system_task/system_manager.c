@@ -128,63 +128,42 @@ static atlas_err_t system_manager_notify_handler(system_manager_t* manager, syst
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t system_manager_event_jog_data_handler(
-    system_manager_t* manager,
-    system_event_payload_jog_data_t const* jog_data)
+static atlas_err_t system_manager_event_data_handler(system_manager_t* manager,
+                                                     system_event_payload_data_t const* data)
 {
-    ATLAS_ASSERT(manager && jog_data);
+    ATLAS_ASSERT(manager && data);
     ATLAS_LOG_FUNC(TAG);
 
-    if (manager->status.state != ATLAS_STATE_JOG) {
+    if (manager->state != ATLAS_STATE_JOG) {
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
-    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOG_DATA};
-    event.payload.jog_data = *jog_data;
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_DATA};
+    event.payload.data.data = data->data;
 
     if (!system_manager_send_packet_event(&event)) {
         return ATLAS_ERR_FAIL;
     }
 
-    manager->status.jog_data = *jog_data;
-
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t system_manager_event_meas_data_handler(
-    system_manager_t* manager,
-    system_event_payload_meas_data_t const* meas_data)
+static atlas_err_t system_manager_event_path_handler(system_manager_t* manager,
+                                                     system_event_payload_path_t const* path)
 {
-    ATLAS_ASSERT(manager && meas_data);
+    ATLAS_ASSERT(manager && path);
     ATLAS_LOG_FUNC(TAG);
 
-    ui_event_t event = {.type = UI_EVENT_TYPE_MEAS_DATA};
-    event.payload.meas_data = *meas_data;
+    if (path->type == ATLAS_PATH_TYPE_JOINTS) {
+        manager->path = *path;
+    } else {
+        packet_event_t event = {.type = PACKET_EVENT_TYPE_PATH};
+        event.payload.path = path->path;
 
-    if (!system_manager_send_ui_event(&event)) {
-        return ATLAS_ERR_FAIL;
+        if (!system_manager_send_packet_event(&event)) {
+            return ATLAS_ERR_FAIL;
+        }
     }
-
-    manager->status.meas_data = *meas_data;
-
-    return ATLAS_ERR_OK;
-}
-
-static atlas_err_t system_manager_event_path_data_handler(
-    system_manager_t* manager,
-    system_event_payload_path_data_t const* path_data)
-{
-    ATLAS_ASSERT(manager && path_data);
-    ATLAS_LOG_FUNC(TAG);
-
-    packet_event_t event = {.type = PACKET_EVENT_TYPE_PATH_DATA};
-    event.payload.path_data = *path_data;
-
-    if (!system_manager_send_packet_event(&event)) {
-        return ATLAS_ERR_FAIL;
-    }
-
-    manager->status.path = *path_data;
 
     return ATLAS_ERR_OK;
 }
@@ -196,14 +175,14 @@ static atlas_err_t system_manager_event_start_path_handler(
     ATLAS_ASSERT(manager && start_path);
     ATLAS_LOG_FUNC(TAG);
 
-    if (manager->status.state != ATLAS_STATE_IDLE) {
+    if (manager->state != ATLAS_STATE_IDLE) {
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
     ATLAS_LOG(TAG, "starting path");
 
-    manager->status.state = ATLAS_STATE_PATH;
-    manager->status.path_index = 0U;
+    manager->state = ATLAS_STATE_PATH;
+    manager->path_index = 0U;
 
     return ATLAS_ERR_OK;
 }
@@ -215,14 +194,14 @@ static atlas_err_t system_manager_event_stop_path_handler(
     ATLAS_ASSERT(manager && stop_path);
     ATLAS_LOG_FUNC(TAG);
 
-    if (manager->status.state != ATLAS_STATE_PATH) {
+    if (manager->state != ATLAS_STATE_PATH) {
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
     ATLAS_LOG(TAG, "stopping path");
 
-    manager->status.state = ATLAS_STATE_IDLE;
-    manager->status.path_index = 0U;
+    manager->state = ATLAS_STATE_IDLE;
+    manager->path_index = 0U;
 
     return ATLAS_ERR_OK;
 }
@@ -234,14 +213,14 @@ static atlas_err_t system_manager_event_start_jog_handler(
     ATLAS_ASSERT(manager && start_jog);
     ATLAS_LOG_FUNC(TAG);
 
-    if (manager->status.state != ATLAS_STATE_IDLE) {
+    if (manager->state != ATLAS_STATE_IDLE) {
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
     ATLAS_LOG(TAG, "starting jog");
 
-    manager->status.state = ATLAS_STATE_JOG;
-    manager->status.path_index = 0U;
+    manager->state = ATLAS_STATE_JOG;
+    manager->path_index = 0U;
 
     return ATLAS_ERR_OK;
 }
@@ -253,14 +232,14 @@ static atlas_err_t system_manager_event_stop_jog_handler(
     ATLAS_ASSERT(manager && stop_jog);
     ATLAS_LOG_FUNC(TAG);
 
-    if (manager->status.state != ATLAS_STATE_JOG) {
+    if (manager->state != ATLAS_STATE_JOG) {
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
     ATLAS_LOG(TAG, "stopping jog");
 
-    manager->status.state = ATLAS_STATE_IDLE;
-    manager->status.path_index = 0U;
+    manager->state = ATLAS_STATE_IDLE;
+    manager->path_index = 0U;
 
     return ATLAS_ERR_OK;
 }
@@ -272,7 +251,7 @@ static atlas_err_t system_manager_event_save_path_handler(
     ATLAS_ASSERT(manager && save_path);
     ATLAS_LOG_FUNC(TAG);
 
-    if (manager->status.state != ATLAS_STATE_IDLE) {
+    if (manager->state != ATLAS_STATE_IDLE) {
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
@@ -294,7 +273,7 @@ static atlas_err_t system_manager_event_load_path_handler(
     ATLAS_ASSERT(manager && load_path);
     ATLAS_LOG_FUNC(TAG);
 
-    if (manager->status.state != ATLAS_STATE_IDLE) {
+    if (manager->state != ATLAS_STATE_IDLE) {
         return ATLAS_ERR_IMPROPER_STATE;
     }
 
@@ -314,14 +293,11 @@ static atlas_err_t system_manager_event_handler(system_manager_t* manager,
     ATLAS_ASSERT(manager && event);
 
     switch (event->type) {
-        case SYSTEM_EVENT_TYPE_JOG_DATA: {
-            return system_manager_event_jog_data_handler(manager, &event->payload.jog_data);
+        case SYSTEM_EVENT_TYPE_DATA: {
+            return system_manager_event_data_handler(manager, &event->payload.data);
         }
-        case SYSTEM_EVENT_TYPE_MEAS_DATA: {
-            return system_manager_event_meas_data_handler(manager, &event->payload.meas_data);
-        }
-        case SYSTEM_EVENT_TYPE_PATH_DATA: {
-            return system_manager_event_path_data_handler(manager, &event->payload.path_data);
+        case SYSTEM_EVENT_TYPE_PATH: {
+            return system_manager_event_path_handler(manager, &event->payload.path);
         }
         case SYSTEM_EVENT_TYPE_START_PATH: {
             return system_manager_event_start_path_handler(manager, &event->payload.start_path);
@@ -370,11 +346,12 @@ atlas_err_t system_manager_initialize(system_manager_t* manager)
 {
     ATLAS_ASSERT(manager);
 
-    memset(&manager->status, 0, sizeof(manager->status));
+    memset(&manager->path, 0, sizeof(manager->path));
+    memset(&manager->data, 0, sizeof(manager->data));
 
-    manager->status.state = ATLAS_STATE_IDLE;
-    manager->status.timestamp = 0U;
-    manager->status.path_index = 0U;
+    manager->state = ATLAS_STATE_IDLE;
+    manager->timestamp = 0U;
+    manager->path_index = 0U;
 
     return ATLAS_ERR_OK;
 }

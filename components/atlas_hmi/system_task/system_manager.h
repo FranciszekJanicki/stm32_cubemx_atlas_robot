@@ -8,7 +8,11 @@
 #include <stdbool.h>
 
 typedef struct {
-    atlas_status_t status;
+    uint32_t timestamp;
+    atlas_state_t state;
+    atlas_joints_path_t path;
+    atlas_joints_data_t data;
+    size_t path_index;
 } system_manager_t;
 
 atlas_err_t system_manager_initialize(system_manager_t* manager);
