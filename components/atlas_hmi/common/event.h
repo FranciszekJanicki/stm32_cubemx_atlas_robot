@@ -107,32 +107,23 @@ typedef struct {
 typedef enum {
     PACKET_EVENT_TYPE_START,
     PACKET_EVENT_TYPE_STOP,
-    PACKET_EVENT_TYPE_DATA,
-    PACKET_EVENT_TYPE_PATH,
-    PACKET_EVENT_TYPE_START_PATH,
-    PACKET_EVENT_TYPE_STOP_PATH,
-    PACKET_EVENT_TYPE_START_JOG,
-    PACKET_EVENT_TYPE_STOP_JOG,
+    PACKET_EVENT_TYPE_START_JOINTS,
+    PACKET_EVENT_TYPE_STOP_JOINTS,
+    PACKET_EVENT_TYPE_JOINTS_DATA,
 } packet_event_type_t;
 
 typedef int packet_event_payload_start_t;
 typedef int packet_event_payload_stop_t;
-typedef atlas_data_t packet_event_payload_data_t;
-typedef atlas_path_t packet_event_payload_path_t;
-typedef int packet_event_payload_start_jog_t;
-typedef int packet_event_payload_stop_jog_t;
-typedef int packet_event_payload_start_path_t;
-typedef int packet_event_payload_stop_path_t;
+typedef int packet_event_payload_start_joints_t;
+typedef int packet_event_payload_stop_joints_t;
+typedef atlas_joints_data_t packet_event_payload_joints_data_t;
 
 typedef union {
     packet_event_payload_start_t start;
     packet_event_payload_stop_t stop;
-    packet_event_payload_data_t data;
-    packet_event_payload_path_t path;
-    packet_event_payload_start_path_t start_path;
-    packet_event_payload_stop_path_t stop_path;
-    packet_event_payload_start_jog_t start_jog;
-    packet_event_payload_stop_jog_t stop_jog;
+    packet_event_payload_start_joints_t start_joints;
+    packet_event_payload_stop_joints_t stop_joints;
+    packet_event_payload_joints_data_t joints_data;
 } packet_event_payload_t;
 
 typedef struct {
@@ -150,7 +141,6 @@ typedef enum {
 } sd_event_type_t;
 
 typedef int sd_event_payload_start_t;
-
 typedef int sd_event_payload_stop_t;
 
 typedef struct {
