@@ -5,6 +5,10 @@
 
 typedef struct {
     bool is_running;
+
+    struct {
+        TickType_t tick;
+    } button_ctxs[BUTTON_TYPE_NUM];
 } button_manager_t;
 
 atlas_err_t button_manager_process(button_manager_t* manager);

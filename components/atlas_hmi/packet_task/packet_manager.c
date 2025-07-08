@@ -161,6 +161,7 @@ static atlas_err_t packet_manager_event_start_handler(packet_manager_t* manager,
         return ATLAS_ERR_ALREADY_RUNNING;
     }
 
+    packet_manager_set_rob_packet_ready_pin(manager, true);
     manager->is_running = true;
 
     return ATLAS_ERR_OK;
@@ -176,6 +177,7 @@ static atlas_err_t packet_manager_event_stop_handler(packet_manager_t* manager,
         return ATLAS_ERR_NOT_RUNNING;
     }
 
+    packet_manager_set_rob_packet_ready_pin(manager, true);
     manager->is_running = false;
 
     return ATLAS_ERR_OK;
@@ -295,7 +297,6 @@ atlas_err_t packet_manager_initialize(packet_manager_t* manager)
     ATLAS_ASSERT(manager);
 
     manager->is_running = false;
-
     packet_manager_set_rob_packet_ready_pin(manager, true);
 
     if (!packet_manager_send_system_notify(SYSTEM_NOTIFY_PACKET_READY)) {

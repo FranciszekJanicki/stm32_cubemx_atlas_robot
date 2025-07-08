@@ -7,3 +7,6 @@
 [submodule "components/handle_manager"]
 	path = components/handle_manager
 	url = git@github.com:FranciszekJanicki/handle_manager.git
+[submodule "components/uart_task"]
+	path = components/uart_task
+	url = git@github.com:FranciszekJanicki/uart_task.git

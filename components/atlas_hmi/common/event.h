@@ -85,6 +85,7 @@ typedef enum {
     UI_EVENT_TYPE_START,
     UI_EVENT_TYPE_STOP,
     UI_EVENT_TYPE_DATA,
+    UI_EVENT_TYPE_BUTTON,
 } ui_event_type_t;
 
 typedef int ui_event_payload_start_t;
@@ -134,14 +135,21 @@ typedef struct {
 typedef enum {
     BUTTON_EVENT_TYPE_START,
     BUTTON_EVENT_TYPE_STOP,
+    BUTTON_EVENT_TYPE_PRESS,
 } button_event_type_t;
 
 typedef int button_event_payload_start_t;
 typedef int button_event_payload_stop_t;
 
+typedef struct {
+    button_type_t type;
+    button_state_t state;
+} button_event_payload_button_t;
+
 typedef union {
     button_event_payload_start_t start;
     button_event_payload_stop_t stop;
+    button_event_payload_button_t button;
 } button_event_payload_t;
 
 typedef struct {

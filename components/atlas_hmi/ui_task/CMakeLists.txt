@@ -1,6 +1,3 @@
-add_subdirectory(button_task)
-add_subdirectory(display_task)
-
 add_library(ui_task STATIC)
 
 target_sources(ui_task PRIVATE 

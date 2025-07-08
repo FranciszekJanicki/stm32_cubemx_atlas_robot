@@ -4,6 +4,8 @@ add_subdirectory(system_task)
 add_subdirectory(packet_task)
 add_subdirectory(sd_task)
 add_subdirectory(kinematics_task)
+add_subdirectory(button_task)
+add_subdirectory(display_task)
 
 add_library(atlas_hmi INTERFACE)
 
