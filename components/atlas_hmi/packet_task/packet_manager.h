@@ -12,6 +12,8 @@
 typedef struct {
     bool is_running;
 
+    GPIO_TypeDef* rob_packet_ready_gpio;
+    uint16_t rob_packet_ready_pin;
 } packet_manager_t;
 
 atlas_err_t packet_manager_process(packet_manager_t* manager);

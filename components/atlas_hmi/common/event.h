@@ -132,6 +132,45 @@ typedef struct {
 } packet_event_t;
 
 typedef enum {
+    BUTTON_EVENT_TYPE_START,
+    BUTTON_EVENT_TYPE_STOP,
+} button_event_type_t;
+
+typedef int button_event_payload_start_t;
+typedef int button_event_payload_stop_t;
+
+typedef union {
+    button_event_payload_start_t start;
+    button_event_payload_stop_t stop;
+} button_event_payload_t;
+
+typedef struct {
+    button_event_type_t type;
+    button_event_payload_t payload;
+} button_event_t;
+
+typedef enum {
+    DISPLAY_EVENT_TYPE_START,
+    DISPLAY_EVENT_TYPE_STOP,
+    DISPLAY_EVENT_TYPE_DATA,
+} display_event_type_t;
+
+typedef int display_event_payload_start_t;
+typedef int display_event_payload_stop_t;
+typedef atlas_data_t display_event_payload_data_t;
+
+typedef union {
+    display_event_payload_start_t start;
+    display_event_payload_stop_t stop;
+    display_event_payload_data_t data;
+} display_event_payload_t;
+
+typedef struct {
+    display_event_type_t type;
+    display_event_payload_t payload;
+} display_event_t;
+
+typedef enum {
     SD_EVENT_TYPE_START,
     SD_EVENT_TYPE_STOP,
     SD_EVENT_TYPE_LOAD_CONFIG,

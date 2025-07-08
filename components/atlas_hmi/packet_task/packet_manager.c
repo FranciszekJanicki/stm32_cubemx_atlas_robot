@@ -38,13 +38,41 @@ static inline bool packet_manager_receive_packet_notify(packet_notify_t* notify)
     return xTaskNotifyWait(0, PACKET_NOTIFY_ALL, (uint32_t*)notify, pdMS_TO_TICKS(1)) == pdPASS;
 }
 
+static inline bool packet_manager_packet_spi_transmit(packet_manager_t const* manager,
+                                                      uint8_t const* data,
+                                                      size_t data_size)
+{
+    //  return HAL_SPI_Transmit(manager->spi, data, data_size, 100) == HAL_OK;
+}
+
+static inline bool packet_manager_packet_spi_receive(packet_manager_t const* manager,
+                                                     uint8_t* data,
+                                                     size_t data_size)
+{
+    //  return HAL_SPI_Receive(manager->spi, data, data_size, 100) == HAL_OK;
+}
+
+static inline void packet_manager_set_rob_packet_ready_pin(packet_manager_t const* manager,
+                                                           bool state)
+{
+    HAL_GPIO_WritePin(manager->rob_packet_ready_gpio, manager->rob_packet_ready_pin, GPIO_PIN_SET);
+}
+
 static inline bool packet_manager_send_rob_packet(packet_manager_t* manager,
                                                   atlas_rob_packet_t const* packet)
 {
     ATLAS_ASSERT(manager && packet);
 
-    return true;
-    // HAL_SPI_Transmit(manager->spi, (uint8_t*)packet, sizeof(*packet), 100) == HAL_OK;
+    bool result =
+        packet_manager_packet_spi_transmit(manager, (uint8_t const*)packet, sizeof(*packet));
+
+    if (result) {
+        packet_manager_set_rob_packet_ready_pin(manager, false);
+        vTaskDelay(pdMS_TO_TICKS(10));
+        packet_manager_set_rob_packet_ready_pin(manager, true);
+    }
+
+    return result;
 }
 
 static inline bool packet_manager_receive_hmi_packet(packet_manager_t* manager,
@@ -52,8 +80,9 @@ static inline bool packet_manager_receive_hmi_packet(packet_manager_t* manager,
 {
     ATLAS_ASSERT(manager && packet);
 
-    // HAL_SPI_Receive(manager->spi, (uint8_t*)packet, sizeof(*packet), 100) == HAL_OK;
-    return true;
+    bool result = packet_manager_packet_spi_receive(manager, (uint8_t*)packet, sizeof(*packet));
+
+    return result;
 }
 
 static atlas_err_t packet_manager_packet_joints_data_handler(
@@ -266,6 +295,8 @@ atlas_err_t packet_manager_initialize(packet_manager_t* manager)
     ATLAS_ASSERT(manager);
 
     manager->is_running = false;
+
+    packet_manager_set_rob_packet_ready_pin(manager, true);
 
     if (!packet_manager_send_system_notify(SYSTEM_NOTIFY_PACKET_READY)) {
         return ATLAS_ERR_FAIL;
