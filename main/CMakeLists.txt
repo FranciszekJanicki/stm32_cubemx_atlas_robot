@@ -2,14 +2,10 @@ add_executable(main)
 
 target_sources(main PRIVATE 
     main.c
-    nvic.c
-    hooks.c
-    syscalls.c
 )
 
 target_link_libraries(main PRIVATE
     stm32cubemx
-    atlas_core
     atlas_hmi
 )
 
