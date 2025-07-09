@@ -5,6 +5,8 @@
 
 typedef struct {
     bool is_running;
+    bool is_button_ready;
+    bool is_display_ready;
 } ui_manager_t;
 
 atlas_err_t ui_manager_initialize(ui_manager_t* manager);

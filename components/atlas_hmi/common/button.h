@@ -27,7 +27,10 @@ typedef struct {
     button_type_t type;
     button_state_t state;
     button_press_t press;
-    TickType_t tick;
 } button_t;
+
+char const* button_type_to_string(button_type_t type);
+char const* button_state_to_string(button_state_t state);
+char const* button_press_to_string(button_press_t press);
 
 #endif // COMMON_BUTTON_H

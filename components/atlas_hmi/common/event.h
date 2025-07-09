@@ -135,7 +135,7 @@ typedef struct {
 typedef enum {
     BUTTON_EVENT_TYPE_START,
     BUTTON_EVENT_TYPE_STOP,
-    BUTTON_EVENT_TYPE_PRESS,
+    BUTTON_EVENT_TYPE_BUTTON,
 } button_event_type_t;
 
 typedef int button_event_payload_start_t;

@@ -2,9 +2,7 @@ add_library(common STATIC)
 
 target_sources(common PRIVATE
     manager.c
-    hooks.c
-    nvic.c
-    syscalls.c
+    button.c
 )
 
 target_include_directories(common PUBLIC

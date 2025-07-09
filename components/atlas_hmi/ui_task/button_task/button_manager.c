@@ -142,7 +142,7 @@ static atlas_err_t button_manager_event_handler(button_manager_t* manager,
         case BUTTON_EVENT_TYPE_STOP: {
             return button_manager_event_stop_handler(manager, &event->payload.stop);
         }
-        case BUTTON_EVENT_TYPE_PRESS: {
+        case BUTTON_EVENT_TYPE_BUTTON: {
             return button_manager_event_button_handler(manager, &event->payload.button);
         }
         default: {
