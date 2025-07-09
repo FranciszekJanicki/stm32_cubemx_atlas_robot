@@ -25,6 +25,7 @@ target_link_libraries(atlas_hmi PUBLIC
     packet_task
     system_task
     sd_task
+    uart_task
 )
 
 target_compile_options(atlas_hmi PUBLIC

@@ -8,10 +8,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
-static char const* const TAG = "kinematics_task";
-
 #define KINEMATICS_TASK_STACK_DEPTH (4096U / sizeof(StackType_t))
 #define KINEMATICS_TASK_PRIORITY (1U)
+#define KINEMATICS_TASK_NAME ("kinematics_task")
+#define KINEMATICS_TASK_ARGUMENT (NULL)
 
 #define KINEMATICS_QUEUE_ITEMS (10U)
 #define KINEMATICS_QUEUE_ITEM_SIZE (sizeof(kinematics_event_t))
@@ -20,10 +20,10 @@ static char const* const TAG = "kinematics_task";
 static void kinematics_task_func(void*)
 {
     kinematics_manager_t kinematics_manager;
-    ATLAS_LOG_ON_ERR(TAG, kinematics_manager_initialize(&kinematics_manager));
+    ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME, kinematics_manager_initialize(&kinematics_manager));
 
     while (1) {
-        ATLAS_LOG_ON_ERR(TAG, kinematics_manager_process(&kinematics_manager));
+        ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME, kinematics_manager_process(&kinematics_manager));
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
@@ -34,9 +34,9 @@ void kinematics_task_initialize(void)
     static StackType_t kinematics_task_stack[KINEMATICS_TASK_STACK_DEPTH];
 
     TaskHandle_t kinematics_task = xTaskCreateStatic(kinematics_task_func,
-                                                     "kinematics_task",
+                                                     KINEMATICS_TASK_NAME,
                                                      KINEMATICS_TASK_STACK_DEPTH,
-                                                     NULL,
+                                                     KINEMATICS_TASK_ARGUMENT,
                                                      KINEMATICS_TASK_PRIORITY,
                                                      kinematics_task_stack,
                                                      &kinematics_task_buffer);
@@ -59,6 +59,8 @@ void kinematics_queue_initialize(void)
 
 #undef KINEMATICS_TASK_STACK_DEPTH
 #undef KINEMATICS_TASK_PRIORITY
+#undef KINEMATICS_TASK_NAME
+#undef KINEMATICS_TASK_ARGUMENT
 
 #undef KINEMATICS_QUEUE_ITEMS
 #undef KINEMATICS_QUEUE_ITEM_SIZE

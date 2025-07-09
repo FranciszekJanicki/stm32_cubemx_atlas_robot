@@ -6,10 +6,10 @@
 #include "task.h"
 #include <stdint.h>
 
-static char const* const TAG = "sd_task";
-
 #define SD_TASK_STACK_DEPTH (5000U / sizeof(StackType_t))
+#define SD_TASK_NAME ("sd_task")
 #define SD_TASK_PRIORITY (1U)
+#define SD_TASK_ARGUMENT (NULL)
 
 #define SD_QUEUE_ITEMS (10U)
 #define SD_QUEUE_ITEM_SIZE (sizeof(sd_event_t))
@@ -17,11 +17,11 @@ static char const* const TAG = "sd_task";
 
 static void sd_task_func(void*)
 {
-    sd_manager_t sd_manager;
-    ATLAS_LOG_ON_ERR(TAG, sd_manager_initialize(&sd_manager));
+    sd_manager_t manager;
+    ATLAS_LOG_ON_ERR(SD_TASK_NAME, sd_manager_initialize(&manager));
 
     while (1) {
-        ATLAS_LOG_ON_ERR(TAG, sd_manager_process(&sd_manager));
+        ATLAS_LOG_ON_ERR(SD_TASK_NAME, sd_manager_process(&manager));
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
@@ -32,9 +32,9 @@ void sd_task_initialize(void)
     static StackType_t sd_task_stack[SD_TASK_STACK_DEPTH];
 
     TaskHandle_t sd_task = xTaskCreateStatic(sd_task_func,
-                                             "sd_task",
+                                             SD_TASK_NAME,
                                              SD_TASK_STACK_DEPTH,
-                                             NULL,
+                                             SD_TASK_ARGUMENT,
                                              SD_TASK_PRIORITY,
                                              sd_task_stack,
                                              &sd_task_buffer);
@@ -55,6 +55,8 @@ void sd_queue_initialize(void)
 
 #undef SD_TASK_STACK_DEPTH
 #undef SD_TASK_PRIORITY
+#undef SD_TASK_NAME
+#undef SD_TASK_ARGUMENT
 
 #undef SD_QUEUE_ITEMS
 #undef SD_QUEUE_ITEM_SIZE

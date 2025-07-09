@@ -6,10 +6,10 @@
 #include "task.h"
 #include <stdint.h>
 
-static char const* const TAG = "packet_task";
-
 #define PACKET_TASK_STACK_DEPTH (5000U / sizeof(StackType_t))
 #define PACKET_TASK_PRIORITY (1U)
+#define PACKET_TASK_NAME ("packet_task")
+#define PACKET_TASK_ARGUMENT (NULL)
 
 #define PACKET_QUEUE_ITEMS (10U)
 #define PACKET_QUEUE_ITEM_SIZE (sizeof(packet_event_t))
@@ -18,10 +18,10 @@ static char const* const TAG = "packet_task";
 static void packet_task_func(void*)
 {
     packet_manager_t packet_manager;
-    ATLAS_LOG_ON_ERR(TAG, packet_manager_initialize(&packet_manager));
+    ATLAS_LOG_ON_ERR(PACKET_TASK_NAME, packet_manager_initialize(&packet_manager));
 
     while (1) {
-        ATLAS_LOG_ON_ERR(TAG, packet_manager_process(&packet_manager));
+        ATLAS_LOG_ON_ERR(PACKET_TASK_NAME, packet_manager_process(&packet_manager));
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
@@ -32,9 +32,9 @@ void packet_task_initialize(void)
     static StackType_t packet_task_stack[PACKET_TASK_STACK_DEPTH];
 
     TaskHandle_t packet_task = xTaskCreateStatic(packet_task_func,
-                                                 "packet_task",
+                                                 PACKET_TASK_NAME,
                                                  PACKET_TASK_STACK_DEPTH,
-                                                 NULL,
+                                                 PACKET_TASK_ARGUMENT,
                                                  PACKET_TASK_PRIORITY,
                                                  packet_task_stack,
                                                  &packet_task_buffer);
@@ -57,6 +57,8 @@ void packet_queue_initialize(void)
 
 #undef PACKET_TASK_STACK_DEPTH
 #undef PACKET_TASK_PRIORITY
+#undef PACKET_TASK_NAME
+#undef PACKET_TASK_ARGUMENT
 
 #undef PACKET_QUEUE_ITEMS
 #undef PACKET_QUEUE_ITEM_SIZE
