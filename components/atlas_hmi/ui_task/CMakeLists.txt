@@ -6,6 +6,7 @@ add_library(ui_task STATIC)
 target_sources(ui_task PRIVATE 
     ui_manager.c
     ui_task.c
+    ui_screen.c
 )
 
 target_include_directories(ui_task PUBLIC 

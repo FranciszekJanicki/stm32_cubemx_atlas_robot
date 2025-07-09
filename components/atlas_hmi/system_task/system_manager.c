@@ -346,10 +346,11 @@ static atlas_err_t system_manager_event_handler(system_manager_t* manager,
         case SYSTEM_EVENT_TYPE_DATA: {
             switch (event->origin) {
                 case SYSTEM_EVENT_ORIGIN_PACKET: {
-                    system_manager_event_measured_data_handler(manager, &event->payload.data);
+                    return system_manager_event_measured_data_handler(manager,
+                                                                      &event->payload.data);
                 }
                 case SYSTEM_EVENT_ORIGIN_UI: {
-                    system_manager_event_jog_data_handler(manager, &event->payload.data);
+                    return system_manager_event_jog_data_handler(manager, &event->payload.data);
                 }
                 default: {
                     return ATLAS_ERR_UNKNOWN_ORIGIN;

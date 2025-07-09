@@ -183,15 +183,15 @@ static atlas_err_t kinematics_manager_event_path_handler(
             event.payload.path.type = ATLAS_PATH_TYPE_JOINTS;
             event.payload.path.payload.joints_path =
                 kinematics_manager_cartesian_to_joints_path(&path->payload.cartesian_path);
-        }
+        } break;
         case ATLAS_PATH_TYPE_JOINTS: {
             event.payload.path.type = ATLAS_PATH_TYPE_CARTESIAN;
             event.payload.path.payload.cartesian_path =
                 kinematics_manager_joints_to_cartesian_path(&path->payload.joints_path);
-        }
+        } break;
         default: {
             event.payload.path.type = ATLAS_PATH_TYPE_NONE;
-        }
+        } break;
     }
 
     if (!kinematics_manager_send_system_event(&event)) {

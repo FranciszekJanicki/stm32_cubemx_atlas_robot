@@ -35,26 +35,6 @@ static inline bool button_manager_send_ui_event(ui_event_t const* event)
     return xQueueSend(queue_manager_get(QUEUE_TYPE_UI), event, pdMS_TO_TICKS(1)) == pdPASS;
 }
 
-static atlas_err_t button_manager_notify_button_handler(button_manager_t* manager,
-                                                        button_type_t type)
-{
-    ATLAS_ASSERT(manager);
-    ATLAS_LOG_FUNC(TAG);
-
-    if (!manager->is_running) {
-        return ATLAS_ERR_NOT_RUNNING;
-    }
-
-    ui_event_t event = {.type = UI_EVENT_TYPE_BUTTON};
-    event.payload.button.type = type;
-
-    if (!button_manager_send_ui_event(&event)) {
-        return ATLAS_ERR_FAIL;
-    }
-
-    return ATLAS_ERR_OK;
-}
-
 static atlas_err_t button_manager_notify_handler(button_manager_t* manager, button_notify_t notify)
 {
     ATLAS_ASSERT(manager);
