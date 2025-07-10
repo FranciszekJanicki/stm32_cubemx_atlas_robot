@@ -83,16 +83,7 @@ static atlas_err_t display_manager_event_data_handler(display_manager_t* manager
         return ATLAS_ERR_NOT_RUNNING;
     }
 
-    switch (data->type) {
-        case ATLAS_DATA_TYPE_CARTESIAN: {
-            atlas_print_cartesian_data(&data->payload.cartesian_data);
-        } break;
-        case ATLAS_DATA_TYPE_JOINTS: {
-            atlas_print_joints_data(&data->payload.joints_data);
-        } break;
-        default: {
-        } break;
-    }
+    atlas_print_data(data);
 
     return ATLAS_ERR_OK;
 }
