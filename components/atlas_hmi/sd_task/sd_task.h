@@ -1,7 +1,6 @@
-#ifndef PACKET_TASK_PACKET_TASK_H
-#define PACKET_TASK_PACKET_TASK_H
+#ifndef SD_TASK_SD_TASK_H
+#define SD_TASK_SD_TASK_H
 
 void sd_task_initialize(void);
-void sd_queue_initialize(void);
 
-#endif // PACKET_TASK_PACKET_TASK_H
+#endif // SD_TASK_SD_TASK_H

@@ -25,33 +25,35 @@ static void display_task_func(void*)
     }
 }
 
-void display_task_initialize(void)
+static TaskHandle_t display_task_create_task(void)
 {
     static StaticTask_t display_task_buffer;
     static StackType_t display_task_stack[DISPLAY_TASK_STACK_DEPTH];
 
-    TaskHandle_t display_task = xTaskCreateStatic(display_task_func,
-                                                  DISPLAY_TASK_NAME,
-                                                  DISPLAY_TASK_STACK_DEPTH,
-                                                  DISPLAY_TASK_ARGUMENT,
-                                                  DISPLAY_TASK_PRIORITY,
-                                                  display_task_stack,
-                                                  &display_task_buffer);
-
-    task_manager_set(TASK_TYPE_DISPLAY, display_task);
+    return xTaskCreateStatic(display_task_func,
+                             DISPLAY_TASK_NAME,
+                             DISPLAY_TASK_STACK_DEPTH,
+                             DISPLAY_TASK_ARGUMENT,
+                             DISPLAY_TASK_PRIORITY,
+                             display_task_stack,
+                             &display_task_buffer);
 }
 
-void display_queue_initialize(void)
+static QueueHandle_t display_task_create_queue(void)
 {
     static StaticQueue_t display_queue_buffer;
     static uint8_t display_queue_storage[DISPLAY_QUEUE_STORAGE_SIZE];
 
-    QueueHandle_t display_queue = xQueueCreateStatic(DISPLAY_QUEUE_ITEMS,
-                                                     DISPLAY_QUEUE_ITEM_SIZE,
-                                                     display_queue_storage,
-                                                     &display_queue_buffer);
+    return xQueueCreateStatic(DISPLAY_QUEUE_ITEMS,
+                              DISPLAY_QUEUE_ITEM_SIZE,
+                              display_queue_storage,
+                              &display_queue_buffer);
+}
 
-    queue_manager_set(QUEUE_TYPE_DISPLAY, display_queue);
+void display_task_initialize(void)
+{
+    queue_manager_set(QUEUE_TYPE_DISPLAY, display_task_create_queue());
+    task_manager_set(TASK_TYPE_DISPLAY, display_task_create_task());
 }
 
 #undef DISPLAY_TASK_PRIORITY

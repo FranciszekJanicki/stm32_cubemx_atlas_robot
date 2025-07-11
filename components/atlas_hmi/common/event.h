@@ -82,21 +82,32 @@ typedef struct {
 } kinematics_event_t;
 
 typedef enum {
+    UI_EVENT_ORIGIN_SYSTEM,
+    UI_EVENT_ORIGIN_JOINTS,
+} ui_event_origin_t;
+
+typedef enum {
     UI_EVENT_TYPE_START,
     UI_EVENT_TYPE_STOP,
-    UI_EVENT_TYPE_DATA,
+    UI_EVENT_TYPE_JOG_DATA,
+    UI_EVENT_TYPE_ROB_DATA,
+    UI_EVENT_TYPE_PATH,
     UI_EVENT_TYPE_BUTTON,
 } ui_event_type_t;
 
 typedef int ui_event_payload_start_t;
 typedef int ui_event_payload_stop_t;
-typedef atlas_data_t ui_event_payload_data_t;
+typedef atlas_data_t ui_event_payload_rob_data_t;
+typedef atlas_data_t ui_event_payload_jog_data_t;
+typedef atlas_path_t ui_event_payload_path_t;
 typedef button_t ui_event_payload_button_t;
 
 typedef union {
     ui_event_payload_start_t start;
     ui_event_payload_stop_t stop;
-    ui_event_payload_data_t data;
+    ui_event_payload_rob_data_t rob_data;
+    ui_event_payload_jog_data_t jog_data;
+    ui_event_payload_path_t path;
     ui_event_payload_button_t button;
 } ui_event_payload_t;
 
@@ -161,16 +172,19 @@ typedef enum {
     DISPLAY_EVENT_TYPE_START,
     DISPLAY_EVENT_TYPE_STOP,
     DISPLAY_EVENT_TYPE_DATA,
+    DISPLAY_EVENT_TYPE_PATH,
 } display_event_type_t;
 
 typedef int display_event_payload_start_t;
 typedef int display_event_payload_stop_t;
 typedef atlas_data_t display_event_payload_data_t;
+typedef atlas_path_t display_event_payload_path_t;
 
 typedef union {
     display_event_payload_start_t start;
     display_event_payload_stop_t stop;
     display_event_payload_data_t data;
+    display_event_payload_path_t path;
 } display_event_payload_t;
 
 typedef struct {

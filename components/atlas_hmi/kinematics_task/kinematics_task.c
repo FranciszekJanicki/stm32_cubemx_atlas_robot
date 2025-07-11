@@ -28,33 +28,35 @@ static void kinematics_task_func(void*)
     }
 }
 
-void kinematics_task_initialize(void)
+static TaskHandle_t kinematics_task_create_task(void)
 {
     static StaticTask_t kinematics_task_buffer;
     static StackType_t kinematics_task_stack[KINEMATICS_TASK_STACK_DEPTH];
 
-    TaskHandle_t kinematics_task = xTaskCreateStatic(kinematics_task_func,
-                                                     KINEMATICS_TASK_NAME,
-                                                     KINEMATICS_TASK_STACK_DEPTH,
-                                                     KINEMATICS_TASK_ARGUMENT,
-                                                     KINEMATICS_TASK_PRIORITY,
-                                                     kinematics_task_stack,
-                                                     &kinematics_task_buffer);
-
-    task_manager_set(TASK_TYPE_KINEMATICS, kinematics_task);
+    return xTaskCreateStatic(kinematics_task_func,
+                             KINEMATICS_TASK_NAME,
+                             KINEMATICS_TASK_STACK_DEPTH,
+                             KINEMATICS_TASK_ARGUMENT,
+                             KINEMATICS_TASK_PRIORITY,
+                             kinematics_task_stack,
+                             &kinematics_task_buffer);
 }
 
-void kinematics_queue_initialize(void)
+static QueueHandle_t kinematics_task_create_queue(void)
 {
     static StaticQueue_t kinematics_queue_buffer;
     static uint8_t kinematics_queue_storage[KINEMATICS_QUEUE_STORAGE_SIZE];
 
-    QueueHandle_t kinematics_queue = xQueueCreateStatic(KINEMATICS_QUEUE_ITEMS,
-                                                        KINEMATICS_QUEUE_ITEM_SIZE,
-                                                        kinematics_queue_storage,
-                                                        &kinematics_queue_buffer);
+    return xQueueCreateStatic(KINEMATICS_QUEUE_ITEMS,
+                              KINEMATICS_QUEUE_ITEM_SIZE,
+                              kinematics_queue_storage,
+                              &kinematics_queue_buffer);
+}
 
-    queue_manager_set(QUEUE_TYPE_KINEMATICS, kinematics_queue);
+void kinematics_task_initialize(void)
+{
+    queue_manager_set(QUEUE_TYPE_KINEMATICS, kinematics_task_create_queue());
+    task_manager_set(TASK_TYPE_KINEMATICS, kinematics_task_create_task());
 }
 
 #undef KINEMATICS_TASK_STACK_DEPTH

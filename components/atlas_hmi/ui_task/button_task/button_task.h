@@ -6,6 +6,5 @@
 #include "task.h"
 
 void button_task_initialize(void);
-void button_queue_initialize(void);
 
 #endif // BUTTON_TASK_BUTTON_TASK_H

@@ -112,10 +112,10 @@ static atlas_err_t ui_manager_event_stop_handler(ui_manager_t* manager,
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t ui_manager_event_data_handler(ui_manager_t* manager,
-                                                 ui_event_payload_data_t const* data)
+static atlas_err_t ui_manager_event_rob_data_handler(ui_manager_t* manager,
+                                                     ui_event_payload_rob_data_t const* rob_data)
 {
-    ATLAS_ASSERT(manager && data);
+    ATLAS_ASSERT(manager && rob_data);
     ATLAS_LOG_FUNC(TAG);
 
     if (!manager->is_running) {
@@ -123,9 +123,29 @@ static atlas_err_t ui_manager_event_data_handler(ui_manager_t* manager,
     }
 
     display_event_t event = {.type = DISPLAY_EVENT_TYPE_DATA};
-    event.payload.data = *data;
+    event.payload.data = *rob_data;
 
     if (!ui_manager_send_display_event(&event)) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    return ATLAS_ERR_OK;
+}
+
+static atlas_err_t ui_manager_event_jog_data_handler(ui_manager_t* manager,
+                                                     ui_event_payload_jog_data_t const* jog_data)
+{
+    ATLAS_ASSERT(manager && jog_data);
+    ATLAS_LOG_FUNC(TAG);
+
+    if (!manager->is_running) {
+        return ATLAS_ERR_NOT_RUNNING;
+    }
+
+    system_event_t event = {.origin = SYSTEM_EVENT_ORIGIN_UI, .type = SYSTEM_EVENT_TYPE_DATA};
+    event.payload.data = *jog_data;
+
+    if (!ui_manager_send_system_event(&event)) {
         return ATLAS_ERR_FAIL;
     }
 
@@ -147,6 +167,26 @@ static atlas_err_t ui_manager_event_button_handler(ui_manager_t* manager,
               button_type_to_string(button->type),
               button_press_to_string(button->press),
               button_state_to_string(button->press));
+
+    return ATLAS_ERR_OK;
+}
+
+static atlas_err_t ui_manager_event_path_handler(ui_manager_t* manager,
+                                                 ui_event_payload_path_t const* path)
+{
+    ATLAS_ASSERT(manager && path);
+    ATLAS_LOG_FUNC(TAG);
+
+    if (!manager->is_running) {
+        return ATLAS_ERR_NOT_RUNNING;
+    }
+
+    display_event_t event = {.type = DISPLAY_EVENT_TYPE_PATH};
+    event.payload.path = *path;
+
+    if (!ui_manager_send_display_event(&event)) {
+        return ATLAS_ERR_FAIL;
+    }
 
     return ATLAS_ERR_OK;
 }
@@ -208,11 +248,17 @@ static atlas_err_t ui_manager_event_handler(ui_manager_t* manager, ui_event_t co
         case UI_EVENT_TYPE_STOP: {
             return ui_manager_event_stop_handler(manager, &event->payload.stop);
         }
-        case UI_EVENT_TYPE_DATA: {
-            return ui_manager_event_data_handler(manager, &event->payload.data);
+        case UI_EVENT_TYPE_ROB_DATA: {
+            return ui_manager_event_rob_data_handler(manager, &event->payload.rob_data);
+        }
+        case UI_EVENT_TYPE_JOG_DATA: {
+            return ui_manager_event_jog_data_handler(manager, &event->payload.jog_data);
         }
         case UI_EVENT_TYPE_BUTTON: {
             return ui_manager_event_button_handler(manager, &event->payload.button);
+        }
+        case UI_EVENT_TYPE_PATH: {
+            return ui_manager_event_path_handler(manager, &event->payload.path);
         }
         default: {
             return ATLAS_ERR_UNKNOWN_EVENT;

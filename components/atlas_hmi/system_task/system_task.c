@@ -26,33 +26,35 @@ static void system_task_func(void*)
     }
 }
 
-void system_task_initialize(void)
+static TaskHandle_t system_task_create_task(void)
 {
     static StaticTask_t system_task_buffer;
     static StackType_t system_task_stack[SYSTEM_TASK_STACK_DEPTH];
 
-    TaskHandle_t system_task = xTaskCreateStatic(system_task_func,
-                                                 SYSTEM_TASK_NAME,
-                                                 SYSTEM_TASK_STACK_DEPTH,
-                                                 SYSTEM_TASK_ARGUMENT,
-                                                 SYSTEM_TASK_PRIORITY,
-                                                 system_task_stack,
-                                                 &system_task_buffer);
-
-    task_manager_set(TASK_TYPE_SYSTEM, system_task);
+    return xTaskCreateStatic(system_task_func,
+                             SYSTEM_TASK_NAME,
+                             SYSTEM_TASK_STACK_DEPTH,
+                             SYSTEM_TASK_ARGUMENT,
+                             SYSTEM_TASK_PRIORITY,
+                             system_task_stack,
+                             &system_task_buffer);
 }
 
-void system_queue_initialize(void)
+static QueueHandle_t system_task_create_queue(void)
 {
     static StaticQueue_t system_queue_buffer;
     static uint8_t system_queue_storage[SYSTEM_QUEUE_STORAGE_SIZE];
 
-    QueueHandle_t system_queue = xQueueCreateStatic(SYSTEM_QUEUE_ITEMS,
-                                                    SYSTEM_QUEUE_ITEM_SIZE,
-                                                    system_queue_storage,
-                                                    &system_queue_buffer);
+    return xQueueCreateStatic(SYSTEM_QUEUE_ITEMS,
+                              SYSTEM_QUEUE_ITEM_SIZE,
+                              system_queue_storage,
+                              &system_queue_buffer);
+}
 
-    queue_manager_set(QUEUE_TYPE_SYSTEM, system_queue);
+void system_task_initialize(void)
+{
+    queue_manager_set(QUEUE_TYPE_SYSTEM, system_task_create_queue());
+    task_manager_set(TASK_TYPE_SYSTEM, system_task_create_task());
 }
 
 #undef SYSTEM_TASK_STACK_DEPTH

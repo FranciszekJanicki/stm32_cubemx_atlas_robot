@@ -24,33 +24,35 @@ static void button_task_func(void*)
     }
 }
 
-void button_task_initialize(void)
+static TaskHandle_t button_task_create_task(void)
 {
     static StaticTask_t button_task_buffer;
     static StackType_t button_task_stack[BUTTON_TASK_STACK_DEPTH];
 
-    TaskHandle_t button_task = xTaskCreateStatic(button_task_func,
-                                                 BUTTON_TASK_NAME,
-                                                 BUTTON_TASK_STACK_DEPTH,
-                                                 BUTTON_TASK_ARGUMENT,
-                                                 BUTTON_TASK_PRIORITY,
-                                                 button_task_stack,
-                                                 &button_task_buffer);
-
-    task_manager_set(TASK_TYPE_BUTTON, button_task);
+    return xTaskCreateStatic(button_task_func,
+                             BUTTON_TASK_NAME,
+                             BUTTON_TASK_STACK_DEPTH,
+                             BUTTON_TASK_ARGUMENT,
+                             BUTTON_TASK_PRIORITY,
+                             button_task_stack,
+                             &button_task_buffer);
 }
 
-void button_queue_initialize(void)
+static QueueHandle_t button_task_create_queue(void)
 {
     static StaticQueue_t button_queue_buffer;
     static uint8_t button_queue_storage[BUTTON_QUEUE_STORAGE_SIZE];
 
-    QueueHandle_t button_queue = xQueueCreateStatic(BUTTON_QUEUE_ITEMS,
-                                                    BUTTON_QUEUE_ITEM_SIZE,
-                                                    button_queue_storage,
-                                                    &button_queue_buffer);
+    return xQueueCreateStatic(BUTTON_QUEUE_ITEMS,
+                              BUTTON_QUEUE_ITEM_SIZE,
+                              button_queue_storage,
+                              &button_queue_buffer);
+}
 
-    queue_manager_set(QUEUE_TYPE_BUTTON, button_queue);
+void button_task_initialize(void)
+{
+    queue_manager_set(QUEUE_TYPE_BUTTON, button_task_create_queue());
+    task_manager_set(TASK_TYPE_BUTTON, button_task_create_task());
 }
 
 void button_press_callback(button_type_t type)

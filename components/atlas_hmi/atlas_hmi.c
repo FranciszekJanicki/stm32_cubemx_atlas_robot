@@ -1,5 +1,6 @@
 #include "atlas_hmi.h"
 #include "kinematics_task.h"
+#include "manager.h"
 #include "packet_task.h"
 #include "sd_task.h"
 #include "system_task.h"
@@ -16,7 +17,7 @@
 #define UART_STREAM_BUFFER_STORAGE_SIZE (1024U)
 #define UART_STREAM_BUFFER_TRIGGER (1U)
 
-void uart_stream_buffer_initialize(void)
+void uart_task_initialize(void)
 {
     static StaticStreamBuffer_t uart_stream_buffer_buffer;
     static uint8_t uart_stream_buffer_storage[UART_STREAM_BUFFER_STORAGE_SIZE];
@@ -28,10 +29,7 @@ void uart_stream_buffer_initialize(void)
                                        uart_stream_buffer_storage);
 
     stream_buffer_manager_set(STREAM_BUFFER_TYPE_UART, uart_stream_buffer);
-}
 
-void uart_task_initialize(void)
-{
     static StaticTask_t uart_task_buffer;
     static StackType_t uart_task_stack[UART_TASK_STACK_DEPTH];
 
@@ -41,7 +39,7 @@ void uart_task_initialize(void)
                                             .uart_buffer = uart_buffer,
                                             .uart_action = UART_ACTION_TRANSMIT,
                                             .uart_buffer_size = UART_BUFFER_SIZE};
-    uart_task_ctx.stream_buffer = stream_buffer_manager_get(STREAM_BUFFER_TYPE_UART);
+    uart_task_ctx.stream_buffer = uart_stream_buffer;
 
     TaskHandle_t uart_task = uart_task_create_task(&uart_task_ctx,
                                                    UART_TASK_NAME,
@@ -49,19 +47,15 @@ void uart_task_initialize(void)
                                                    UART_TASK_PRIORITY,
                                                    uart_task_stack,
                                                    UART_TASK_STACK_DEPTH);
+
+    task_manager_set(TASK_TYPE_UART, uart_task);
 }
 
 void atlas_hmi_initialize(void)
 {
-    uart_stream_buffer_initialize();
-    system_queue_initialize();
-    ui_queue_intialize();
-    packet_queue_initialize();
-    kinematics_queue_initialize();
-
+    system_task_initialize();
     uart_task_initialize();
     ui_task_initialize();
-    system_task_initialize();
     packet_task_initialize();
     kinematics_task_initialize();
 }

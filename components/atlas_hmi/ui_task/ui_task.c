@@ -23,37 +23,38 @@ static void ui_task_func(void*)
     }
 }
 
-void ui_task_initialize(void)
+static TaskHandle_t ui_task_create_task(void)
 {
-    display_task_initialize();
-    button_task_initialize();
-
     static StaticTask_t ui_task_buffer;
     static StackType_t ui_task_stack[UI_TASK_STACK_DEPTH];
 
-    TaskHandle_t ui_task = xTaskCreateStatic(ui_task_func,
-                                             UI_TASK_NAME,
-                                             UI_TASK_STACK_DEPTH,
-                                             UI_TASK_ARGUMENT,
-                                             UI_TASK_PRIORITY,
-                                             ui_task_stack,
-                                             &ui_task_buffer);
-
-    task_manager_set(TASK_TYPE_UI, ui_task);
+    return xTaskCreateStatic(ui_task_func,
+                             UI_TASK_NAME,
+                             UI_TASK_STACK_DEPTH,
+                             UI_TASK_ARGUMENT,
+                             UI_TASK_PRIORITY,
+                             ui_task_stack,
+                             &ui_task_buffer);
 }
 
-void ui_queue_intialize(void)
+static QueueHandle_t ui_task_create_queue(void)
 {
-    display_queue_initialize();
-    button_queue_initialize();
-
     static StaticQueue_t ui_queue_buffer;
     static uint8_t ui_queue_storage[UI_QUEUE_STORAGE_SIZE];
 
-    QueueHandle_t ui_queue =
-        xQueueCreateStatic(UI_QUEUE_ITEMS, UI_QUEUE_ITEM_SIZE, ui_queue_storage, &ui_queue_buffer);
+    return xQueueCreateStatic(UI_QUEUE_ITEMS,
+                              UI_QUEUE_ITEM_SIZE,
+                              ui_queue_storage,
+                              &ui_queue_buffer);
+}
 
-    queue_manager_set(QUEUE_TYPE_UI, ui_queue);
+void ui_task_initialize(void)
+{
+    task_manager_set(TASK_TYPE_UI, ui_task_create_task());
+    queue_manager_set(QUEUE_TYPE_UI, ui_task_create_queue());
+
+    button_task_initialize();
+    display_task_initialize();
 }
 
 #undef UI_TASK_STACK_DEPTH

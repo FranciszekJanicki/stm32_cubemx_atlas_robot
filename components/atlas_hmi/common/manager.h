@@ -16,6 +16,7 @@ typedef enum {
     TASK_TYPE_BUTTON,
     TASK_TYPE_DISPLAY,
     TASK_TYPE_SD,
+    TASK_TYPE_UART,
     TASK_TYPE_NUM,
 } TaskType_t;
 

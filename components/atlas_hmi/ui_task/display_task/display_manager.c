@@ -88,6 +88,21 @@ static atlas_err_t display_manager_event_data_handler(display_manager_t* manager
     return ATLAS_ERR_OK;
 }
 
+static atlas_err_t display_manager_event_path_handler(display_manager_t* manager,
+                                                      display_event_payload_path_t const* path)
+{
+    ATLAS_ASSERT(manager && path);
+    ATLAS_LOG_FUNC(TAG);
+
+    if (!manager->is_running) {
+        return ATLAS_ERR_NOT_RUNNING;
+    }
+
+    atlas_print_path(path);
+
+    return ATLAS_ERR_OK;
+}
+
 static atlas_err_t display_manager_event_handler(display_manager_t* manager,
                                                  display_event_t const* event)
 {
@@ -103,6 +118,9 @@ static atlas_err_t display_manager_event_handler(display_manager_t* manager,
         }
         case DISPLAY_EVENT_TYPE_DATA: {
             return display_manager_event_data_handler(manager, &event->payload.data);
+        }
+        case DISPLAY_EVENT_TYPE_PATH: {
+            return display_manager_event_path_handler(manager, &event->payload.path);
         }
         default: {
             return ATLAS_ERR_UNKNOWN_EVENT;

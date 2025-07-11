@@ -215,6 +215,13 @@ static atlas_err_t system_manager_event_path_handler(system_manager_t* manager,
         }
     }
 
+    ui_event_t event = {.type = UI_EVENT_TYPE_PATH};
+    event.payload.path = *path;
+
+    if (!system_manager_send_ui_event(&event)) {
+        return ATLAS_ERR_FAIL;
+    }
+
     return ATLAS_ERR_OK;
 }
 
