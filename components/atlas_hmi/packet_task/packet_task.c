@@ -57,6 +57,18 @@ void packet_task_initialize(void)
     task_manager_set(TASK_TYPE_NUM, packet_task_create_task());
 }
 
+void hmi_packet_ready_callback(void)
+{
+    BaseType_t task_woken = pdFALSE;
+
+    xTaskNotifyFromISR(task_manager_get(TASK_TYPE_PACKET),
+                       PACKET_NOTIFY_HMI_PACKET_READY,
+                       eSetBits,
+                       &task_woken);
+
+    portYIELD_FROM_ISR(task_woken);
+}
+
 #undef PACKET_TASK_STACK_DEPTH
 #undef PACKET_TASK_PRIORITY
 #undef PACKET_TASK_NAME

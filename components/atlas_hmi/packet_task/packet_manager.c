@@ -162,6 +162,7 @@ static atlas_err_t packet_manager_event_start_handler(packet_manager_t* manager,
     }
 
     packet_manager_set_rob_packet_ready_pin(manager, true);
+
     manager->is_running = true;
 
     return ATLAS_ERR_OK;
@@ -178,6 +179,7 @@ static atlas_err_t packet_manager_event_stop_handler(packet_manager_t* manager,
     }
 
     packet_manager_set_rob_packet_ready_pin(manager, true);
+
     manager->is_running = false;
 
     return ATLAS_ERR_OK;
@@ -201,6 +203,10 @@ static atlas_err_t packet_manager_event_start_joints_handler(
         return ATLAS_ERR_FAIL;
     }
 
+    packet_manager_set_rob_packet_ready_pin(manager, false);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    packet_manager_set_rob_packet_ready_pin(manager, true);
+
     return ATLAS_ERR_OK;
 }
 
@@ -222,6 +228,10 @@ static atlas_err_t packet_manager_event_stop_joints_handler(
         return ATLAS_ERR_FAIL;
     }
 
+    packet_manager_set_rob_packet_ready_pin(manager, false);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    packet_manager_set_rob_packet_ready_pin(manager, true);
+
     return ATLAS_ERR_OK;
 }
 
@@ -242,6 +252,10 @@ static atlas_err_t packet_manager_event_joints_data_handler(
     if (!packet_manager_send_rob_packet(manager, &packet)) {
         return ATLAS_ERR_FAIL;
     }
+
+    packet_manager_set_rob_packet_ready_pin(manager, false);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    packet_manager_set_rob_packet_ready_pin(manager, true);
 
     return ATLAS_ERR_OK;
 }
@@ -297,6 +311,7 @@ atlas_err_t packet_manager_initialize(packet_manager_t* manager)
     ATLAS_ASSERT(manager);
 
     manager->is_running = false;
+
     packet_manager_set_rob_packet_ready_pin(manager, true);
 
     if (!packet_manager_send_system_notify(SYSTEM_NOTIFY_PACKET_READY)) {
@@ -304,16 +319,4 @@ atlas_err_t packet_manager_initialize(packet_manager_t* manager)
     }
 
     return ATLAS_ERR_OK;
-}
-
-void hmi_packet_ready_callback(void)
-{
-    BaseType_t task_woken = pdFALSE;
-
-    xTaskNotifyFromISR(task_manager_get(TASK_TYPE_PACKET),
-                       PACKET_NOTIFY_HMI_PACKET_READY,
-                       eSetBits,
-                       &task_woken);
-
-    portYIELD_FROM_ISR(task_woken);
 }
