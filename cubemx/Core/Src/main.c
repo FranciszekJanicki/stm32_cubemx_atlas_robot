@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 

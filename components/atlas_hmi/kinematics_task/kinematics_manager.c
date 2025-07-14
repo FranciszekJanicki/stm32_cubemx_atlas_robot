@@ -252,9 +252,10 @@ atlas_err_t kinematics_manager_process(kinematics_manager_t* manager)
     return ATLAS_ERR_OK;
 }
 
-atlas_err_t kinematics_manager_initialize(kinematics_manager_t* manager)
+atlas_err_t kinematics_manager_initialize(kinematics_manager_t* manager,
+                                          kinematics_config_t const* config)
 {
-    ATLAS_ASSERT(manager);
+    ATLAS_ASSERT(manager && config);
 
     manager->is_running = false;
 

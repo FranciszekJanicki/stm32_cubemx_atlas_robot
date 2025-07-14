@@ -5,6 +5,9 @@
 #include "ui_screen.h"
 
 typedef struct {
+} ui_config_t;
+
+typedef struct {
     bool is_running;
     bool is_button_ready;
     bool is_display_ready;

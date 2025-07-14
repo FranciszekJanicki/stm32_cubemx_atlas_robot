@@ -23,7 +23,7 @@ static void ui_task_func(void*)
     }
 }
 
-static TaskHandle_t ui_task_create_task(void)
+static TaskHandle_t ui_task_create_task()
 {
     static StaticTask_t ui_task_buffer;
     static StackType_t ui_task_stack[UI_TASK_STACK_DEPTH];
@@ -48,13 +48,13 @@ static QueueHandle_t ui_task_create_queue(void)
                               &ui_queue_buffer);
 }
 
-void ui_task_initialize(void)
+void ui_task_initialize(ui_task_ctx_t* task_ctx)
 {
     task_manager_set(TASK_TYPE_UI, ui_task_create_task());
     queue_manager_set(QUEUE_TYPE_UI, ui_task_create_queue());
 
-    button_task_initialize();
-    display_task_initialize();
+    button_task_initialize(&task_ctx->button_task_ctx);
+    display_task_initialize(&task_ctx->display_task_ctx);
 }
 
 #undef UI_TASK_STACK_DEPTH

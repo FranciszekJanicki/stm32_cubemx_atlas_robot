@@ -42,20 +42,20 @@ static inline bool packet_manager_packet_spi_transmit(packet_manager_t const* ma
                                                       uint8_t const* data,
                                                       size_t data_size)
 {
-    //  return HAL_SPI_Transmit(manager->spi, data, data_size, 100) == HAL_OK;
+    //  return HAL_SPI_Transmit(manager->config.packet_spi, data, data_size, 100) == HAL_OK;
 }
 
 static inline bool packet_manager_packet_spi_receive(packet_manager_t const* manager,
                                                      uint8_t* data,
                                                      size_t data_size)
 {
-    //  return HAL_SPI_Receive(manager->spi, data, data_size, 100) == HAL_OK;
+    //  return HAL_SPI_Receive(manager->config.packet_spi, data, data_size, 100) == HAL_OK;
 }
 
 static inline void packet_manager_set_rob_packet_ready_pin(packet_manager_t const* manager,
                                                            bool state)
 {
-    HAL_GPIO_WritePin(manager->rob_packet_ready_gpio, manager->rob_packet_ready_pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(manager->config.rob_packet_ready_gpio, manager->config.rob_packet_ready_pin, GPIO_PIN_SET);
 }
 
 static inline bool packet_manager_send_rob_packet(packet_manager_t* manager,
@@ -306,11 +306,12 @@ atlas_err_t packet_manager_process(packet_manager_t* manager)
     return ATLAS_ERR_OK;
 }
 
-atlas_err_t packet_manager_initialize(packet_manager_t* manager)
+atlas_err_t packet_manager_initialize(packet_manager_t* manager, packet_config_t const* config)
 {
-    ATLAS_ASSERT(manager);
+    ATLAS_ASSERT(manager && config);
 
     manager->is_running = false;
+    manager->config = *config;
 
     packet_manager_set_rob_packet_ready_pin(manager, true);
 

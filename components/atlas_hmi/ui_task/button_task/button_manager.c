@@ -150,9 +150,9 @@ atlas_err_t button_manager_process(button_manager_t* manager)
     return ATLAS_ERR_OK;
 }
 
-atlas_err_t button_manager_initialize(button_manager_t* manager)
+atlas_err_t button_manager_initialize(button_manager_t* manager, button_config_t const* config)
 {
-    ATLAS_ASSERT(manager);
+    ATLAS_ASSERT(manager && config);
 
     manager->is_running = false;
     memset(manager->button_ctxs, 0, sizeof(manager->button_ctxs));

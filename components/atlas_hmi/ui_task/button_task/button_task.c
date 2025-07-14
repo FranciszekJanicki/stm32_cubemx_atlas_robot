@@ -7,24 +7,25 @@
 #define BUTTON_TASK_STACK_DEPTH (5000U / sizeof(StackType_t))
 #define BUTTON_TASK_PRIORITY (1U)
 #define BUTTON_TASK_NAME ("button_task")
-#define BUTTON_TASK_ARGUMENT (NULL)
 
 #define BUTTON_QUEUE_ITEMS (10U)
 #define BUTTON_QUEUE_ITEM_SIZE (sizeof(button_event_t))
 #define BUTTON_QUEUE_STORAGE_SIZE (BUTTON_QUEUE_ITEMS * BUTTON_QUEUE_ITEM_SIZE)
 
-static void button_task_func(void*)
+static void button_task_func(void* ctx)
 {
-    button_manager_t button_manager;
-    ATLAS_LOG_ON_ERR(BUTTON_TASK_NAME, button_manager_initialize(&button_manager));
+    button_task_ctx_t* task_ctx = (button_task_ctx_t*)ctx;
+
+    button_manager_t manager;
+    ATLAS_LOG_ON_ERR(BUTTON_TASK_NAME, button_manager_initialize(&manager, &task_ctx->config));
 
     while (1) {
-        ATLAS_LOG_ON_ERR(BUTTON_TASK_NAME, button_manager_process(&button_manager));
+        ATLAS_LOG_ON_ERR(BUTTON_TASK_NAME, button_manager_process(&manager));
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
-static TaskHandle_t button_task_create_task(void)
+static TaskHandle_t button_task_create_task(button_task_ctx_t* task_ctx)
 {
     static StaticTask_t button_task_buffer;
     static StackType_t button_task_stack[BUTTON_TASK_STACK_DEPTH];
@@ -32,7 +33,7 @@ static TaskHandle_t button_task_create_task(void)
     return xTaskCreateStatic(button_task_func,
                              BUTTON_TASK_NAME,
                              BUTTON_TASK_STACK_DEPTH,
-                             BUTTON_TASK_ARGUMENT,
+                             task_ctx,
                              BUTTON_TASK_PRIORITY,
                              button_task_stack,
                              &button_task_buffer);
@@ -49,10 +50,12 @@ static QueueHandle_t button_task_create_queue(void)
                               &button_queue_buffer);
 }
 
-void button_task_initialize(void)
+void button_task_initialize(button_task_ctx_t* task_ctx)
 {
+    ATLAS_ASSERT(task_ctx);
+
     queue_manager_set(QUEUE_TYPE_BUTTON, button_task_create_queue());
-    task_manager_set(TASK_TYPE_BUTTON, button_task_create_task());
+    task_manager_set(TASK_TYPE_BUTTON, button_task_create_task(task_ctx));
 }
 
 void button_press_callback(button_type_t type)
@@ -67,7 +70,6 @@ void button_press_callback(button_type_t type)
 #undef BUTTON_TASK_STACK_DEPTH
 #undef BUTTON_TASK_PRIORITY
 #undef BUTTON_TASK_NAME
-#undef BUTTON_TASK_ARGUMENT
 
 #undef BUTTON_QUEUE_ITEMS
 #undef BUTTON_QUEUE_ITEM_SIZE

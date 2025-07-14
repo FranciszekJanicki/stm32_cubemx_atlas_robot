@@ -34,3 +34,5 @@ while read -r REPO NAME; do
     [[ -z "$NAME" || "$NAME" =~ ^# ]] && continue
     remove_component "$NAME"
 done < "$COMPONENTS_FILE"
+
+rm -rf .gitmodules

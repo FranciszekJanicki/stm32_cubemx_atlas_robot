@@ -28,6 +28,11 @@ if [ ! -f "$COMPONENTS_FILE" ]; then
     exit 1
 fi
 
+if [ ! -f ".gitmodules" ]; then
+    echo "File .gitmodules not found, creating..."
+    touch .gitmodules
+fi
+
 while read -r REPO NAME; do
     [[ -z "$REPO" || "$REPO" =~ ^# ]] && continue
     add_component "$REPO" "$NAME"

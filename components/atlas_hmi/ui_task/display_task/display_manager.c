@@ -147,9 +147,9 @@ atlas_err_t display_manager_process(display_manager_t* manager)
     return ATLAS_ERR_OK;
 }
 
-atlas_err_t display_manager_initialize(display_manager_t* manager)
+atlas_err_t display_manager_initialize(display_manager_t* manager, display_config_t const* config)
 {
-    ATLAS_ASSERT(manager);
+    ATLAS_ASSERT(manager && config);
 
     manager->is_running = false;
 

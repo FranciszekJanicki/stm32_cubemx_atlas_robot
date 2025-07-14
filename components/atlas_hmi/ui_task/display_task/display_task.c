@@ -8,16 +8,17 @@
 #define DISPLAY_TASK_PRIORITY (1U)
 #define DISPLAY_TASK_NAME ("display_task")
 #define DISPLAY_TASK_STACK_DEPTH (5000U / sizeof(StackType_t))
-#define DISPLAY_TASK_ARGUMENT (NULL)
 
 #define DISPLAY_QUEUE_ITEM_SIZE (sizeof(display_event_t))
 #define DISPLAY_QUEUE_ITEMS (10U)
 #define DISPLAY_QUEUE_STORAGE_SIZE (DISPLAY_QUEUE_ITEM_SIZE * DISPLAY_QUEUE_ITEMS)
 
-static void display_task_func(void*)
+static void display_task_func(void* ctx)
 {
+    display_task_ctx_t* task_ctx = (display_task_ctx_t*)ctx;
+
     display_manager_t manager;
-    ATLAS_LOG_ON_ERR(DISPLAY_TASK_NAME, display_manager_initialize(&manager));
+    ATLAS_LOG_ON_ERR(DISPLAY_TASK_NAME, display_manager_initialize(&manager, &task_ctx->config));
 
     while (1) {
         ATLAS_LOG_ON_ERR(DISPLAY_TASK_NAME, display_manager_process(&manager));
@@ -25,7 +26,7 @@ static void display_task_func(void*)
     }
 }
 
-static TaskHandle_t display_task_create_task(void)
+static TaskHandle_t display_task_create_task(display_task_ctx_t* task_ctx)
 {
     static StaticTask_t display_task_buffer;
     static StackType_t display_task_stack[DISPLAY_TASK_STACK_DEPTH];
@@ -33,7 +34,7 @@ static TaskHandle_t display_task_create_task(void)
     return xTaskCreateStatic(display_task_func,
                              DISPLAY_TASK_NAME,
                              DISPLAY_TASK_STACK_DEPTH,
-                             DISPLAY_TASK_ARGUMENT,
+                             task_ctx,
                              DISPLAY_TASK_PRIORITY,
                              display_task_stack,
                              &display_task_buffer);
@@ -50,16 +51,17 @@ static QueueHandle_t display_task_create_queue(void)
                               &display_queue_buffer);
 }
 
-void display_task_initialize(void)
+void display_task_initialize(display_task_ctx_t* task_ctx)
 {
+    ATLAS_ASSERT(task_ctx);
+
     queue_manager_set(QUEUE_TYPE_DISPLAY, display_task_create_queue());
-    task_manager_set(TASK_TYPE_DISPLAY, display_task_create_task());
+    task_manager_set(TASK_TYPE_DISPLAY, display_task_create_task(task_ctx));
 }
 
 #undef DISPLAY_TASK_PRIORITY
 #undef DISPLAY_TASK_NAME
 #undef DISPLAY_TASK_STACK_DEPTH
-#undef DISPLAY_TASK_ARGUMENT
 
 #undef DISPLAY_QUEUE_ITEM_SIZE
 #undef DISPLAY_QUEUE_ITEMS

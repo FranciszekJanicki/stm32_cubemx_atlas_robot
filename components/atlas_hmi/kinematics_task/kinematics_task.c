@@ -11,24 +11,26 @@
 #define KINEMATICS_TASK_STACK_DEPTH (4096U / sizeof(StackType_t))
 #define KINEMATICS_TASK_PRIORITY (1U)
 #define KINEMATICS_TASK_NAME ("kinematics_task")
-#define KINEMATICS_TASK_ARGUMENT (NULL)
 
 #define KINEMATICS_QUEUE_ITEMS (10U)
 #define KINEMATICS_QUEUE_ITEM_SIZE (sizeof(kinematics_event_t))
 #define KINEMATICS_QUEUE_STORAGE_SIZE (KINEMATICS_QUEUE_ITEMS * KINEMATICS_QUEUE_ITEM_SIZE)
 
-static void kinematics_task_func(void*)
+static void kinematics_task_func(void* ctx)
 {
-    kinematics_manager_t kinematics_manager;
-    ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME, kinematics_manager_initialize(&kinematics_manager));
+    kinematics_task_ctx_t* task_ctx = (kinematics_task_ctx_t*)ctx;
+
+    kinematics_manager_t manager;
+    ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME,
+                     kinematics_manager_initialize(&manager, &task_ctx->config));
 
     while (1) {
-        ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME, kinematics_manager_process(&kinematics_manager));
+        ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME, kinematics_manager_process(&manager));
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
-static TaskHandle_t kinematics_task_create_task(void)
+static TaskHandle_t kinematics_task_create_task(kinematics_task_ctx_t* task_ctx)
 {
     static StaticTask_t kinematics_task_buffer;
     static StackType_t kinematics_task_stack[KINEMATICS_TASK_STACK_DEPTH];
@@ -36,7 +38,7 @@ static TaskHandle_t kinematics_task_create_task(void)
     return xTaskCreateStatic(kinematics_task_func,
                              KINEMATICS_TASK_NAME,
                              KINEMATICS_TASK_STACK_DEPTH,
-                             KINEMATICS_TASK_ARGUMENT,
+                             task_ctx,
                              KINEMATICS_TASK_PRIORITY,
                              kinematics_task_stack,
                              &kinematics_task_buffer);
@@ -53,16 +55,17 @@ static QueueHandle_t kinematics_task_create_queue(void)
                               &kinematics_queue_buffer);
 }
 
-void kinematics_task_initialize(void)
+void kinematics_task_initialize(kinematics_task_ctx_t* task_ctx)
 {
+    ATLAS_ASSERT(task_ctx);
+
     queue_manager_set(QUEUE_TYPE_KINEMATICS, kinematics_task_create_queue());
-    task_manager_set(TASK_TYPE_KINEMATICS, kinematics_task_create_task());
+    task_manager_set(TASK_TYPE_KINEMATICS, kinematics_task_create_task(task_ctx));
 }
 
 #undef KINEMATICS_TASK_STACK_DEPTH
 #undef KINEMATICS_TASK_PRIORITY
 #undef KINEMATICS_TASK_NAME
-#undef KINEMATICS_TASK_ARGUMENT
 
 #undef KINEMATICS_QUEUE_ITEMS
 #undef KINEMATICS_QUEUE_ITEM_SIZE
