@@ -1,18 +1,29 @@
-add_executable(main)
+add_subdirectory(common)
+add_subdirectory(hmi_task)
+add_subdirectory(system_task)
+add_subdirectory(packet_task)
+add_subdirectory(kinematics_task)
 
-target_sources(main PRIVATE 
-    main.c
-    hooks.c
-    nvic.c
-    syscalls.c
+add_library(atlas_robot STATIC)
+
+target_sources(atlas_robot PRIVATE 
+    atlas_robot.c
 )
 
-target_link_libraries(main PRIVATE
-    stm32cubemx
-    atlas_robot
+target_include_directories(atlas_robot PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_compile_options(main PUBLIC
+target_link_libraries(atlas_robot PUBLIC 
+    common
+    hmi_task
+    kinematics_task
+    packet_task
+    system_task
+    uart_task
+)
+
+target_compile_options(atlas_robot PUBLIC
     -std=c23
     -Wall
     -Wextra

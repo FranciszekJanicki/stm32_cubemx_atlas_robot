@@ -1,18 +1,24 @@
-add_executable(main)
+add_subdirectory(button_task)
+add_subdirectory(display_task)
 
-target_sources(main PRIVATE 
-    main.c
-    hooks.c
-    nvic.c
-    syscalls.c
+add_library(hmi_task STATIC)
+
+target_sources(hmi_task PRIVATE 
+    hmi_manager.c
+    hmi_task.c
+    hmi_screen.c
 )
 
-target_link_libraries(main PRIVATE
-    stm32cubemx
-    atlas_robot
+target_include_directories(hmi_task PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_compile_options(main PUBLIC
+target_link_libraries(hmi_task PUBLIC 
+    button_task
+    display_task
+)
+
+target_compile_options(hmi_task PUBLIC
     -std=c23
     -Wall
     -Wextra

@@ -1,0 +1,21 @@
+#ifndef SYSTEM_TASK_SYSTEM_MANAGER_H
+#define SYSTEM_TASK_SYSTEM_MANAGER_H
+
+#include "FreeRTOS.h"
+#include "common.h"
+#include "queue.h"
+#include "task.h"
+#include <stdbool.h>
+
+typedef struct {
+    uint32_t timestamp;
+    atlas_robot_state_t state;
+    atlas_joints_path_t path;
+    atlas_joints_data_t data;
+    size_t path_index;
+} system_manager_t;
+
+atlas_err_t system_manager_process(system_manager_t* manager);
+atlas_err_t system_manager_initialize(system_manager_t* manager);
+
+#endif // SYSTEM_TASK_SYSTEM_MANAGER_H
