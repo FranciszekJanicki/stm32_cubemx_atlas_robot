@@ -33,7 +33,9 @@ typedef enum {
 } hmi_notify_t;
 
 typedef enum {
-    PACKET_NOTIFY_ROBOT_PACKET_READY = (1 << 0),
+    PACKET_NOTIFY_ROBOT_PACKET_READY =
+        ((1 << ATLAS_JOINT_NUM_1) | (1 << ATLAS_JOINT_NUM_2) | (1 << ATLAS_JOINT_NUM_3) |
+         (1 << ATLAS_JOINT_NUM_4) | (1 << ATLAS_JOINT_NUM_5) | (1 << ATLAS_JOINT_NUM_6)),
     PACKET_NOTIFY_ALL = (PACKET_NOTIFY_ROBOT_PACKET_READY),
 } packet_notify_t;
 

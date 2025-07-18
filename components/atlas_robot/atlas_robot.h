@@ -4,9 +4,11 @@
 #include "hmi_task.h"
 #include "kinematics_task.h"
 #include "packet_task.h"
+#include "system_task.h"
 #include "uart_task.h"
 
 typedef struct {
+    system_task_ctx_t system_ctx;
     uart_task_ctx_t uart_ctx;
     packet_task_ctx_t packet_ctx;
     hmi_task_ctx_t hmi_ctx;

@@ -10,8 +10,17 @@
 #include <stdbool.h>
 
 typedef struct {
-    GPIO_TypeDef* joint_packet_ready_gpio;
-    uint16_t joint_packet_ready_pin;
+    struct {
+        GPIO_TypeDef* joint_packet_ready_gpio;
+        uint16_t joint_packet_ready_pin;
+
+        GPIO_TypeDef* joint_chip_select_gpio;
+        uint16_t joint_chip_select_pin;
+
+        bool is_joint_ready;
+    } packet_ctxs[ATLAS_JOINT_NUM];
+
+    SPI_HandleTypeDef* packet_spi_bus;
 } packet_config_t;
 
 typedef struct {

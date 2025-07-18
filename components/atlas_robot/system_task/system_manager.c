@@ -83,6 +83,20 @@ static inline bool system_manager_receive_system_event(system_event_t* event)
     return xQueueReceive(queue_manager_get(QUEUE_TYPE_SYSTEM), event, pdMS_TO_TICKS(1)) == pdPASS;
 }
 
+static bool system_manager_start_delta_timer(system_manager_t* manager)
+{
+    ATLAS_ASSERT(manager);
+
+    return HAL_TIM_Base_Start_IT(manager->config.delta_timer) == HAL_OK;
+}
+
+static bool system_manager_stop_delta_timer(system_manager_t* manager)
+{
+    ATLAS_ASSERT(manager);
+
+    return HAL_TIM_Base_Stop_IT(manager->config.delta_timer) == HAL_OK;
+}
+
 static atlas_err_t system_manager_notify_hmi_ready_handler(system_manager_t* manager)
 {
     ATLAS_ASSERT(manager);
@@ -154,7 +168,12 @@ static atlas_err_t system_manager_event_jog_robot_data_handler(
     }
 
     if (robot_data->type == ATLAS_ROBOT_DATA_TYPE_JOINTS) {
-        manager->data = robot_data->payload.joints;
+        packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_DATA};
+        event.payload.joints_data = robot_data->payload.joints;
+
+        if (!system_manager_send_packet_event(&event)) {
+            return ATLAS_ERR_FAIL;
+        }
     } else {
         kinematics_event_t event = {.type = KINEMATICS_EVENT_TYPE_ROBOT_DATA};
         event.payload.robot_data.type = ATLAS_ROBOT_DATA_TYPE_CARTESIAN;
@@ -240,6 +259,16 @@ static atlas_err_t system_manager_event_start_path_handler(
 
     ATLAS_LOG(TAG, "starting path");
 
+    if (!system_manager_start_delta_timer(manager)) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_START};
+
+    if (!system_manager_send_packet_event(&event)) {
+        return ATLAS_ERR_FAIL;
+    }
+
     manager->state = ATLAS_ROBOT_STATE_PATH;
     manager->path_index = 0U;
 
@@ -258,6 +287,16 @@ static atlas_err_t system_manager_event_stop_path_handler(
     }
 
     ATLAS_LOG(TAG, "stopping path");
+
+    if (!system_manager_stop_delta_timer(manager)) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_STOP};
+
+    if (!system_manager_send_packet_event(&event)) {
+        return ATLAS_ERR_FAIL;
+    }
 
     manager->state = ATLAS_ROBOT_STATE_IDLE;
     manager->path_index = 0U;
@@ -278,6 +317,16 @@ static atlas_err_t system_manager_event_start_jog_handler(
 
     ATLAS_LOG(TAG, "starting jog");
 
+    if (!system_manager_start_delta_timer(manager)) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_START};
+
+    if (!system_manager_send_packet_event(&event)) {
+        return ATLAS_ERR_FAIL;
+    }
+
     manager->state = ATLAS_ROBOT_STATE_JOG;
     manager->path_index = 0U;
 
@@ -296,6 +345,16 @@ static atlas_err_t system_manager_event_stop_jog_handler(
     }
 
     ATLAS_LOG(TAG, "stopping jog");
+
+    if (!system_manager_stop_delta_timer(manager)) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_STOP};
+
+    if (!system_manager_send_packet_event(&event)) {
+        return ATLAS_ERR_FAIL;
+    }
 
     manager->state = ATLAS_ROBOT_STATE_IDLE;
     manager->path_index = 0U;
@@ -413,9 +472,9 @@ atlas_err_t system_manager_process(system_manager_t* manager)
     return ATLAS_ERR_OK;
 }
 
-atlas_err_t system_manager_initialize(system_manager_t* manager)
+atlas_err_t system_manager_initialize(system_manager_t* manager, system_config_t const* config)
 {
-    ATLAS_ASSERT(manager);
+    ATLAS_ASSERT(manager && config);
 
     memset(&manager->path, 0, sizeof(manager->path));
     memset(&manager->data, 0, sizeof(manager->data));
@@ -423,6 +482,7 @@ atlas_err_t system_manager_initialize(system_manager_t* manager)
     manager->state = ATLAS_ROBOT_STATE_IDLE;
     manager->timestamp = 0U;
     manager->path_index = 0U;
+    manager->config = *config;
 
     return ATLAS_ERR_OK;
 }
