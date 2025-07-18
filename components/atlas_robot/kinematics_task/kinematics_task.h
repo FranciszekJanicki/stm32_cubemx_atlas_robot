@@ -7,6 +7,6 @@ typedef struct {
     kinematics_config_t config;
 } kinematics_task_ctx_t;
 
-void kinematics_task_initialize(kinematics_task_ctx_t * task_ctx);
+atlas_err_t kinematics_task_initialize(kinematics_task_ctx_t* task_ctx);
 
 #endif // KINEMATICS_TASK_KINEMATICS_TASK_H

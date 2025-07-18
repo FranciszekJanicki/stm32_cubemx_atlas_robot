@@ -50,18 +50,29 @@ static QueueHandle_t button_task_create_queue(void)
                               &button_queue_buffer);
 }
 
-void button_task_initialize(button_task_ctx_t* task_ctx)
+atlas_err_t button_task_initialize(button_task_ctx_t* task_ctx)
 {
     ATLAS_ASSERT(task_ctx);
 
-    queue_manager_set(QUEUE_TYPE_BUTTON, button_task_create_queue());
-    task_manager_set(TASK_TYPE_BUTTON, button_task_create_task(task_ctx));
+    QueueHandle_t button_queue = button_task_create_queue();
+    if (button_queue == NULL) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    TaskHandle_t button_task = button_task_create_task(task_ctx);
+    if (button_task == NULL) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    task_manager_set(TASK_TYPE_BUTTON, button_task);
+    queue_manager_set(QUEUE_TYPE_BUTTON, button_queue);
+
+    return ATLAS_ERR_OK;
 }
 
-void button_press_callback(button_type_t type)
+void button_task_press_callback(button_type_t type)
 {
     BaseType_t task_woken = pdFALSE;
-
     xTaskNotifyFromISR(task_manager_get(TASK_TYPE_BUTTON), 1 << type, eSetBits, &task_woken);
 
     portYIELD_FROM_ISR(task_woken);

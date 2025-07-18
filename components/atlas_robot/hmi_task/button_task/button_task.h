@@ -12,4 +12,6 @@ typedef struct {
 
 atlas_err_t button_task_initialize(button_task_ctx_t* task_ctx);
 
+void button_task_press_callback(button_type_t type);
+
 #endif // BUTTON_TASK_BUTTON_TASK_H

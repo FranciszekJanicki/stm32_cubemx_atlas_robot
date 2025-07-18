@@ -51,12 +51,24 @@ static QueueHandle_t display_task_create_queue(void)
                               &display_queue_buffer);
 }
 
-void display_task_initialize(display_task_ctx_t* task_ctx)
+atlas_err_t display_task_initialize(display_task_ctx_t* task_ctx)
 {
     ATLAS_ASSERT(task_ctx);
 
-    queue_manager_set(QUEUE_TYPE_DISPLAY, display_task_create_queue());
-    task_manager_set(TASK_TYPE_DISPLAY, display_task_create_task(task_ctx));
+    QueueHandle_t display_queue = display_task_create_queue();
+    if (display_queue == NULL) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    TaskHandle_t display_task = display_task_create_task(task_ctx);
+    if (display_task == NULL) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    queue_manager_set(QUEUE_TYPE_DISPLAY, display_queue);
+    task_manager_set(TASK_TYPE_DISPLAY, display_task);
+
+    return ATLAS_ERR_FAIL;
 }
 
 #undef DISPLAY_TASK_PRIORITY

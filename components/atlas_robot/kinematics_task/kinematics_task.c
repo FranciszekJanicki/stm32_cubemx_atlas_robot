@@ -55,12 +55,24 @@ static QueueHandle_t kinematics_task_create_queue(void)
                               &kinematics_queue_buffer);
 }
 
-void kinematics_task_initialize(kinematics_task_ctx_t* task_ctx)
+atlas_err_t kinematics_task_initialize(kinematics_task_ctx_t* task_ctx)
 {
     ATLAS_ASSERT(task_ctx);
 
-    queue_manager_set(QUEUE_TYPE_KINEMATICS, kinematics_task_create_queue());
-    task_manager_set(TASK_TYPE_KINEMATICS, kinematics_task_create_task(task_ctx));
+    QueueHandle_t kinematics_queue = kinematics_task_create_queue();
+    if (kinematics_queue == NULL) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    TaskHandle_t kinematics_task = kinematics_task_create_task(task_ctx);
+    if (kinematics_task == NULL) {
+        return ATLAS_ERR_FAIL;
+    }
+
+    queue_manager_set(QUEUE_TYPE_KINEMATICS, kinematics_queue);
+    task_manager_set(TASK_TYPE_KINEMATICS, kinematics_task);
+
+    return ATLAS_ERR_OK;
 }
 
 #undef KINEMATICS_TASK_STACK_DEPTH

@@ -6,8 +6,8 @@
 #include "hmi_manager.h"
 
 typedef struct {
-    display_task_ctx_t display_task_ctx;
-    button_task_ctx_t button_task_ctx;
+    display_task_ctx_t display_ctx;
+    button_task_ctx_t button_ctx;
 } hmi_task_ctx_t;
 
 atlas_err_t hmi_task_initialize(hmi_task_ctx_t* task_ctx);
