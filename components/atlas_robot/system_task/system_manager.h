@@ -20,6 +20,11 @@ typedef struct {
     atlas_joints_path_t path;
     size_t path_index;
 
+    struct {
+        float32_t position;
+        
+    } joint_ctxs[ATLAS_JOINT_NUM];
+
     system_config_t config;
 } system_manager_t;
 

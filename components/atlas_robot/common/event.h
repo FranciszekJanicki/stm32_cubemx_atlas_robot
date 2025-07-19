@@ -129,23 +129,32 @@ typedef struct {
 typedef enum {
     PACKET_EVENT_TYPE_START,
     PACKET_EVENT_TYPE_STOP,
-    PACKET_EVENT_TYPE_JOINTS_START,
-    PACKET_EVENT_TYPE_JOINTS_STOP,
-    PACKET_EVENT_TYPE_JOINTS_DATA,
+    PACKET_EVENT_TYPE_JOINT_START,
+    PACKET_EVENT_TYPE_JOINT_STOP,
+    PACKET_EVENT_TYPE_JOINT_DATA,
 } packet_event_type_t;
 
 typedef int packet_event_payload_start_t;
 typedef int packet_event_payload_stop_t;
-typedef int packet_event_payload_joints_start_t;
-typedef int packet_event_payload_joints_stop_t;
-typedef atlas_joints_data_t packet_event_payload_joints_data_t;
+typedef struct {
+    atlas_joint_num_t num;
+    atlas_joint_start_t start;
+} packet_event_payload_joint_start_t;
+typedef struct {
+    atlas_joint_num_t num;
+    atlas_joint_stop_t stop;
+} packet_event_payload_joint_stop_t;
+typedef struct {
+    atlas_joint_num_t num;
+    atlas_joint_data_t data;
+} packet_event_payload_joint_data_t;
 
 typedef union {
     packet_event_payload_start_t start;
     packet_event_payload_stop_t stop;
-    packet_event_payload_joints_start_t joints_start;
-    packet_event_payload_joints_stop_t joints_stop;
-    packet_event_payload_joints_data_t joints_data;
+    packet_event_payload_joint_start_t joint_start;
+    packet_event_payload_joint_stop_t joint_stop;
+    packet_event_payload_joint_data_t joint_data;
 } packet_event_payload_t;
 
 typedef struct {

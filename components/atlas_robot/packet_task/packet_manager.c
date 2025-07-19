@@ -96,12 +96,13 @@ static inline bool packet_manager_send_joint_packet(
 {
     ATLAS_ASSERT(manager && packet);
 
-    uint8_t data[sizeof(atlas_joint_packet_t)];
-    atlas_joint_packet_encode(packet, &data);
+    uint8_t buffer[JOINT_PACKET_SIZE];
+
+    atlas_joint_packet_encode(packet, &buffer);
 
     packet_manager_set_joint_chip_select_pin(manager, num, false);
     bool result =
-        packet_manager_packet_spi_transmit(manager, data, sizeof(data));
+        packet_manager_packet_spi_transmit(manager, buffer, sizeof(buffer));
     packet_manager_set_joint_chip_select_pin(manager, num, true);
 
     if (result) {
@@ -119,14 +120,14 @@ static inline bool packet_manager_receive_robot_packet(
 {
     ATLAS_ASSERT(manager && packet);
 
-    uint8_t data[sizeof(atlas_robot_packet_t)];
+    uint8_t buffer[ROBOT_PACKET_SIZE];
 
     packet_manager_set_joint_chip_select_pin(manager, num, false);
     bool result =
-        packet_manager_packet_spi_receive(manager, data, sizeof(data));
+        packet_manager_packet_spi_receive(manager, buffer, sizeof(buffer));
     packet_manager_set_joint_chip_select_pin(manager, num, true);
 
-    atlas_robot_packet_decode(&data, packet);
+    atlas_robot_packet_decode(&buffer, packet);
 
     return result;
 }
@@ -304,11 +305,11 @@ static atlas_err_t packet_manager_event_stop_handler(
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t packet_manager_event_joints_start_handler(
+static atlas_err_t packet_manager_event_joint_start_handler(
     packet_manager_t* manager,
-    packet_event_payload_joints_start_t const* joints_start)
+    packet_event_payload_joint_start_t const* joint_start)
 {
-    ATLAS_ASSERT(manager && joints_start);
+    ATLAS_ASSERT(manager && joint_start);
     ATLAS_LOG_FUNC(TAG);
 
     if (manager->is_running) {
@@ -317,22 +318,18 @@ static atlas_err_t packet_manager_event_joints_start_handler(
 
     atlas_joint_packet_t packet = {.type = ATLAS_JOINT_PACKET_TYPE_JOINT_START};
 
-    for (uint8_t num = 0U; num < ATLAS_JOINT_NUM; ++num) {
-        packet.payload.joint_start;
-
-        if (!packet_manager_send_joint_packet(manager, num, &packet)) {
-            return ATLAS_ERR_FAIL;
-        }
+    if (!packet_manager_send_joint_packet(manager, joint_start->num, &packet)) {
+        return ATLAS_ERR_FAIL;
     }
 
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t packet_manager_event_joints_stop_handler(
+static atlas_err_t packet_manager_event_joint_stop_handler(
     packet_manager_t* manager,
-    packet_event_payload_joints_stop_t const* joints_stop)
+    packet_event_payload_joint_stop_t const* joint_stop)
 {
-    ATLAS_ASSERT(manager && joints_stop);
+    ATLAS_ASSERT(manager && joint_stop);
     ATLAS_LOG_FUNC(TAG);
 
     if (!manager->is_running) {
@@ -341,22 +338,18 @@ static atlas_err_t packet_manager_event_joints_stop_handler(
 
     atlas_joint_packet_t packet = {.type = ATLAS_JOINT_PACKET_TYPE_JOINT_STOP};
 
-    for (uint8_t num = 0U; num < ATLAS_JOINT_NUM; ++num) {
-        packet.payload.joint_start;
-
-        if (!packet_manager_send_joint_packet(manager, num, &packet)) {
-            return ATLAS_ERR_FAIL;
-        }
+    if (!packet_manager_send_joint_packet(manager, joint_stop->num, &packet)) {
+        return ATLAS_ERR_FAIL;
     }
 
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t packet_manager_event_joints_data_handler(
+static atlas_err_t packet_manager_event_joint_data_handler(
     packet_manager_t* manager,
-    packet_event_payload_joints_data_t const* joints_data)
+    packet_event_payload_joint_data_t const* joint_data)
 {
-    ATLAS_ASSERT(manager && joints_data);
+    ATLAS_ASSERT(manager && joint_data);
     ATLAS_LOG_FUNC(TAG);
 
     if (!manager->is_running) {
@@ -364,13 +357,10 @@ static atlas_err_t packet_manager_event_joints_data_handler(
     }
 
     atlas_joint_packet_t packet = {.type = ATLAS_JOINT_PACKET_TYPE_JOINT_DATA};
+    packet.payload.joint_data.position = joint_data->data.position;
 
-    for (uint8_t num = 0U; num < ATLAS_JOINT_NUM; ++num) {
-        packet.payload.joint_data.position = joints_data->positions[num];
-
-        if (!packet_manager_send_joint_packet(manager, num, &packet)) {
-            return ATLAS_ERR_FAIL;
-        }
+    if (!packet_manager_send_joint_packet(manager, joint_data->num, &packet)) {
+        return ATLAS_ERR_FAIL;
     }
 
     return ATLAS_ERR_OK;
@@ -390,20 +380,20 @@ static atlas_err_t packet_manager_event_handler(packet_manager_t* manager,
             return packet_manager_event_stop_handler(manager,
                                                      &event->payload.stop);
         }
-        case PACKET_EVENT_TYPE_JOINTS_START: {
-            return packet_manager_event_joints_start_handler(
+        case PACKET_EVENT_TYPE_JOINT_START: {
+            return packet_manager_event_joint_start_handler(
                 manager,
-                &event->payload.joints_start);
+                &event->payload.joint_start);
         }
-        case PACKET_EVENT_TYPE_JOINTS_STOP: {
-            return packet_manager_event_joints_stop_handler(
+        case PACKET_EVENT_TYPE_JOINT_STOP: {
+            return packet_manager_event_joint_stop_handler(
                 manager,
-                &event->payload.joints_stop);
+                &event->payload.joint_stop);
         }
-        case PACKET_EVENT_TYPE_JOINTS_DATA: {
-            return packet_manager_event_joints_data_handler(
+        case PACKET_EVENT_TYPE_JOINT_DATA: {
+            return packet_manager_event_joint_data_handler(
                 manager,
-                &event->payload.joints_data);
+                &event->payload.joint_data);
         }
         default: {
             return ATLAS_ERR_UNKNOWN_EVENT;

@@ -192,11 +192,15 @@ static atlas_err_t system_manager_event_jog_robot_data_handler(
     }
 
     if (robot_data->type == ATLAS_ROBOT_DATA_TYPE_JOINTS) {
-        packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_DATA};
-        event.payload.joints_data = robot_data->payload.joints;
+        packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINT_DATA};
+        for (uint8_t num = 0U; num < ATLAS_JOINT_NUM; ++num) {
+            event.payload.joint_data.data.position =
+                robot_data->payload.joints.positions[num];
+            event.payload.joint_data.num = num;
 
-        if (!system_manager_send_packet_event(&event)) {
-            return ATLAS_ERR_FAIL;
+            if (!system_manager_send_packet_event(&event)) {
+                return ATLAS_ERR_FAIL;
+            }
         }
     } else {
         kinematics_event_t event = {.type = KINEMATICS_EVENT_TYPE_ROBOT_DATA};
@@ -290,7 +294,7 @@ static atlas_err_t system_manager_event_start_path_handler(
         return ATLAS_ERR_FAIL;
     }
 
-    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_START};
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINT_START};
 
     if (!system_manager_send_packet_event(&event)) {
         return ATLAS_ERR_FAIL;
@@ -319,7 +323,7 @@ static atlas_err_t system_manager_event_stop_path_handler(
         return ATLAS_ERR_FAIL;
     }
 
-    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_STOP};
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINT_STOP};
 
     if (!system_manager_send_packet_event(&event)) {
         return ATLAS_ERR_FAIL;
@@ -348,10 +352,13 @@ static atlas_err_t system_manager_event_start_jog_handler(
         return ATLAS_ERR_FAIL;
     }
 
-    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_START};
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINT_START};
+    for (uint8_t num = 0U; num < ATLAS_JOINT_NUM; ++num) {
+        event.payload.joint_start.num = num;
 
-    if (!system_manager_send_packet_event(&event)) {
-        return ATLAS_ERR_FAIL;
+        if (!system_manager_send_packet_event(&event)) {
+            return ATLAS_ERR_FAIL;
+        }
     }
 
     manager->state = ATLAS_ROBOT_STATE_JOG;
@@ -377,7 +384,7 @@ static atlas_err_t system_manager_event_stop_jog_handler(
         return ATLAS_ERR_FAIL;
     }
 
-    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINTS_STOP};
+    packet_event_t event = {.type = PACKET_EVENT_TYPE_JOINT_STOP};
 
     if (!system_manager_send_packet_event(&event)) {
         return ATLAS_ERR_FAIL;
