@@ -16,8 +16,6 @@ typedef struct {
 
         GPIO_TypeDef* joint_chip_select_gpio;
         uint16_t joint_chip_select_pin;
-
-        bool is_joint_ready;
     } packet_ctxs[ATLAS_JOINT_NUM];
 
     SPI_HandleTypeDef* packet_spi_bus;
@@ -30,6 +28,7 @@ typedef struct {
 } packet_manager_t;
 
 atlas_err_t packet_manager_process(packet_manager_t* manager);
-atlas_err_t packet_manager_initialize(packet_manager_t* manager, packet_config_t const* config);
+atlas_err_t packet_manager_initialize(packet_manager_t* manager,
+                                      packet_config_t const* config);
 
 #endif // PACKET_TASK_PACKET_MANAGER_H

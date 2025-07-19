@@ -12,6 +12,7 @@ typedef struct {
 } display_manager_t;
 
 atlas_err_t display_manager_process(display_manager_t* manager);
-atlas_err_t display_manager_initialize(display_manager_t* manager, display_config_t const* config);
+atlas_err_t display_manager_initialize(display_manager_t* manager,
+                                       display_config_t const* config);
 
 #endif // DISPLAY_TASK_DISPLAY_MANAGER_H

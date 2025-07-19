@@ -16,14 +16,15 @@ typedef struct {
 typedef struct {
     uint32_t timestamp;
     atlas_robot_state_t state;
-    atlas_joints_path_t path;
     atlas_joints_data_t data;
+    atlas_joints_path_t path;
     size_t path_index;
 
     system_config_t config;
 } system_manager_t;
 
 atlas_err_t system_manager_process(system_manager_t* manager);
-atlas_err_t system_manager_initialize(system_manager_t* manager, system_config_t const* config);
+atlas_err_t system_manager_initialize(system_manager_t* manager,
+                                      system_config_t const* config);
 
 #endif // SYSTEM_TASK_SYSTEM_MANAGER_H

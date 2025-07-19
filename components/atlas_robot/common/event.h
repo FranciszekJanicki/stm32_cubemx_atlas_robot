@@ -27,9 +27,18 @@ typedef enum {
     SYSTEM_EVENT_TYPE_LOAD_PATH,
 } system_event_type_t;
 
-typedef atlas_joint_data_t system_event_payload_joint_data_t;
-typedef atlas_joint_ready_t system_event_payload_joint_ready_t;
-typedef atlas_joint_fault_t system_event_payload_joint_fault_t;
+typedef struct {
+    atlas_joint_num_t num;
+    atlas_joint_data_t data;
+} system_event_payload_joint_data_t;
+typedef struct {
+    atlas_joint_num_t num;
+    atlas_joint_ready_t ready;
+} system_event_payload_joint_ready_t;
+typedef struct {
+    atlas_joint_num_t num;
+    atlas_joint_fault_t fault;
+} system_event_payload_joint_fault_t;
 typedef atlas_robot_data_t system_event_payload_robot_data_t;
 typedef atlas_robot_path_t system_event_payload_robot_path_t;
 typedef sd_save_path_t system_event_payload_save_path_t;

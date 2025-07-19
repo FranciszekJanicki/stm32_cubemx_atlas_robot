@@ -47,6 +47,9 @@ DECLARE_HANDLE_MANAGER(stream_buffer,
                        StreamBufferType_t,
                        StreamBufferHandle_t,
                        STREAM_BUFFER_TYPE_NUM)
-DECLARE_HANDLE_MANAGER(semaphore, SemaphoreType_t, SemaphoreHandle_t, SEMAPHORE_TYPE_NUM)
+DECLARE_HANDLE_MANAGER(semaphore,
+                       SemaphoreType_t,
+                       SemaphoreHandle_t,
+                       SEMAPHORE_TYPE_NUM)
 
 #endif // COMMON_MANAGER_H

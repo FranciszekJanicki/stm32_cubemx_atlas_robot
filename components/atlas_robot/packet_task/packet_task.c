@@ -19,7 +19,8 @@ static void packet_task_func(void* ctx)
     packet_task_ctx_t* task_ctx = (packet_task_ctx_t*)ctx;
 
     packet_manager_t manager;
-    ATLAS_LOG_ON_ERR(PACKET_TASK_NAME, packet_manager_initialize(&manager, &task_ctx->config));
+    ATLAS_LOG_ON_ERR(PACKET_TASK_NAME,
+                     packet_manager_initialize(&manager, &task_ctx->config));
 
     while (1) {
         ATLAS_LOG_ON_ERR(PACKET_TASK_NAME, packet_manager_process(&manager));
@@ -75,7 +76,10 @@ atlas_err_t packet_task_initialize(packet_task_ctx_t* task_ctx)
 void packet_task_robot_packet_ready_callback(atlas_joint_num_t num)
 {
     BaseType_t task_woken = pdFALSE;
-    xTaskNotifyFromISR(task_manager_get(TASK_TYPE_PACKET), 1 << num, eSetBits, &task_woken);
+    xTaskNotifyFromISR(task_manager_get(TASK_TYPE_PACKET),
+                       1 << num,
+                       eSetBits,
+                       &task_woken);
 
     portYIELD_FROM_ISR(task_woken);
 }

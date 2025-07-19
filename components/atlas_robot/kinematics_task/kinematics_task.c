@@ -14,18 +14,21 @@
 
 #define KINEMATICS_QUEUE_ITEMS (10U)
 #define KINEMATICS_QUEUE_ITEM_SIZE (sizeof(kinematics_event_t))
-#define KINEMATICS_QUEUE_STORAGE_SIZE (KINEMATICS_QUEUE_ITEMS * KINEMATICS_QUEUE_ITEM_SIZE)
+#define KINEMATICS_QUEUE_STORAGE_SIZE \
+    (KINEMATICS_QUEUE_ITEMS * KINEMATICS_QUEUE_ITEM_SIZE)
 
 static void kinematics_task_func(void* ctx)
 {
     kinematics_task_ctx_t* task_ctx = (kinematics_task_ctx_t*)ctx;
 
     kinematics_manager_t manager;
-    ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME,
-                     kinematics_manager_initialize(&manager, &task_ctx->config));
+    ATLAS_LOG_ON_ERR(
+        KINEMATICS_TASK_NAME,
+        kinematics_manager_initialize(&manager, &task_ctx->config));
 
     while (1) {
-        ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME, kinematics_manager_process(&manager));
+        ATLAS_LOG_ON_ERR(KINEMATICS_TASK_NAME,
+                         kinematics_manager_process(&manager));
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }

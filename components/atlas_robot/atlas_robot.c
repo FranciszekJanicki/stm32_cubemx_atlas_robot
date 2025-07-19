@@ -54,7 +54,8 @@ atlas_err_t uart_task_initialize(uart_task_ctx_t* task_ctx)
 
     static StaticSemaphore_t uart_mutex_buffer;
 
-    SemaphoreHandle_t uart_mutex = xSemaphoreCreateMutexStatic(&uart_mutex_buffer);
+    SemaphoreHandle_t uart_mutex =
+        xSemaphoreCreateMutexStatic(&uart_mutex_buffer);
     if (uart_mutex == NULL) {
         return ATLAS_ERR_FAIL;
     }

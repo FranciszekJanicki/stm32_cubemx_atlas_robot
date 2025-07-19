@@ -18,44 +18,57 @@ static inline bool hmi_manager_send_button_event(button_event_t const* event)
 {
     ATLAS_ASSERT(event);
 
-    return xQueueSend(queue_manager_get(QUEUE_TYPE_BUTTON), event, pdMS_TO_TICKS(1)) == pdPASS;
+    return xQueueSend(queue_manager_get(QUEUE_TYPE_BUTTON),
+                      event,
+                      pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static inline bool hmi_manager_send_display_event(display_event_t const* event)
 {
     ATLAS_ASSERT(event);
 
-    return xQueueSend(queue_manager_get(QUEUE_TYPE_DISPLAY), event, pdMS_TO_TICKS(1)) == pdPASS;
+    return xQueueSend(queue_manager_get(QUEUE_TYPE_DISPLAY),
+                      event,
+                      pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static inline bool hmi_manager_send_system_event(system_event_t const* event)
 {
     ATLAS_ASSERT(event);
 
-    return xQueueSend(queue_manager_get(QUEUE_TYPE_SYSTEM), event, pdMS_TO_TICKS(1)) == pdPASS;
+    return xQueueSend(queue_manager_get(QUEUE_TYPE_SYSTEM),
+                      event,
+                      pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static inline bool hmi_manager_send_system_notify(system_notify_t notify)
 {
-    return xTaskNotify(task_manager_get(TASK_TYPE_SYSTEM), notify, eSetBits) == pdPASS;
+    return xTaskNotify(task_manager_get(TASK_TYPE_SYSTEM), notify, eSetBits) ==
+           pdPASS;
 }
 
 static inline bool hmi_manager_receive_hmi_event(hmi_event_t* event)
 {
     ATLAS_ASSERT(event);
 
-    return xQueueReceive(queue_manager_get(QUEUE_TYPE_HMI), event, pdMS_TO_TICKS(1)) == pdPASS;
+    return xQueueReceive(queue_manager_get(QUEUE_TYPE_HMI),
+                         event,
+                         pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static inline bool hmi_manager_receive_hmi_notify(hmi_notify_t* notify)
 {
     ATLAS_ASSERT(notify);
 
-    return xTaskNotifyWait(0, HMI_NOTIFY_ALL, (uint32_t*)notify, pdMS_TO_TICKS(1)) == pdPASS;
+    return xTaskNotifyWait(0,
+                           HMI_NOTIFY_ALL,
+                           (uint32_t*)notify,
+                           pdMS_TO_TICKS(1)) == pdPASS;
 }
 
-static atlas_err_t hmi_manager_event_start_handler(hmi_manager_t* manager,
-                                                   hmi_event_payload_start_t const* start)
+static atlas_err_t hmi_manager_event_start_handler(
+    hmi_manager_t* manager,
+    hmi_event_payload_start_t const* start)
 {
     ATLAS_ASSERT(manager && start);
     ATLAS_LOG_FUNC(TAG);
@@ -83,8 +96,9 @@ static atlas_err_t hmi_manager_event_start_handler(hmi_manager_t* manager,
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t hmi_manager_event_stop_handler(hmi_manager_t* manager,
-                                                  hmi_event_payload_stop_t const* stop)
+static atlas_err_t hmi_manager_event_stop_handler(
+    hmi_manager_t* manager,
+    hmi_event_payload_stop_t const* stop)
 {
     ATLAS_ASSERT(manager && stop);
     ATLAS_LOG_FUNC(TAG);
@@ -196,7 +210,8 @@ static atlas_err_t hmi_manager_event_robot_path_handler(
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t hmi_manager_notify_display_ready_handler(hmi_manager_t* manager)
+static atlas_err_t hmi_manager_notify_display_ready_handler(
+    hmi_manager_t* manager)
 {
     ATLAS_ASSERT(manager);
 
@@ -212,7 +227,8 @@ static atlas_err_t hmi_manager_notify_display_ready_handler(hmi_manager_t* manag
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t hmi_manager_notify_button_ready_handler(hmi_manager_t* manager)
+static atlas_err_t hmi_manager_notify_button_ready_handler(
+    hmi_manager_t* manager)
 {
     ATLAS_ASSERT(manager);
 
@@ -228,7 +244,8 @@ static atlas_err_t hmi_manager_notify_button_ready_handler(hmi_manager_t* manage
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t hmi_manager_notify_handler(hmi_manager_t* manager, hmi_notify_t notify)
+static atlas_err_t hmi_manager_notify_handler(hmi_manager_t* manager,
+                                              hmi_notify_t notify)
 {
     ATLAS_ASSERT(manager);
 
@@ -242,26 +259,31 @@ static atlas_err_t hmi_manager_notify_handler(hmi_manager_t* manager, hmi_notify
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t hmi_manager_event_handler(hmi_manager_t* manager, hmi_event_t const* event)
+static atlas_err_t hmi_manager_event_handler(hmi_manager_t* manager,
+                                             hmi_event_t const* event)
 {
     ATLAS_ASSERT(manager && event);
 
     switch (event->type) {
         case HMI_EVENT_TYPE_START: {
-            return hmi_manager_event_start_handler(manager, &event->payload.start);
+            return hmi_manager_event_start_handler(manager,
+                                                   &event->payload.start);
         }
         case HMI_EVENT_TYPE_STOP: {
-            return hmi_manager_event_stop_handler(manager, &event->payload.stop);
+            return hmi_manager_event_stop_handler(manager,
+                                                  &event->payload.stop);
         }
         case HMI_EVENT_TYPE_ROBOT_DATA: {
             switch (event->origin) {
                 case HMI_EVENT_ORIGIN_SYSTEM: {
-                    return hmi_manager_event_measure_robot_data_handler(manager,
-                                                                        &event->payload.robot_data);
+                    return hmi_manager_event_measure_robot_data_handler(
+                        manager,
+                        &event->payload.robot_data);
                 }
                 case HMI_EVENT_ORIGIN_BUTTON: {
-                    return hmi_manager_event_jog_robot_data_handler(manager,
-                                                                    &event->payload.robot_data);
+                    return hmi_manager_event_jog_robot_data_handler(
+                        manager,
+                        &event->payload.robot_data);
                 }
                 default: {
                     return ATLAS_ERR_UNKNOWN_ORIGIN;
@@ -269,10 +291,14 @@ static atlas_err_t hmi_manager_event_handler(hmi_manager_t* manager, hmi_event_t
             }
         }
         case HMI_EVENT_TYPE_ROBOT_PATH: {
-            return hmi_manager_event_robot_path_handler(manager, &event->payload.robot_path);
+            return hmi_manager_event_robot_path_handler(
+                manager,
+                &event->payload.robot_path);
         }
         case HMI_EVENT_TYPE_BUTTON_DATA: {
-            return hmi_manager_event_button_data_handler(manager, &event->payload.button_data);
+            return hmi_manager_event_button_data_handler(
+                manager,
+                &event->payload.button_data);
         }
         default: {
             return ATLAS_ERR_UNKNOWN_EVENT;

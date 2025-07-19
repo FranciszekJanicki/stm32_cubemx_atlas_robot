@@ -11,14 +11,16 @@
 
 #define DISPLAY_QUEUE_ITEM_SIZE (sizeof(display_event_t))
 #define DISPLAY_QUEUE_ITEMS (10U)
-#define DISPLAY_QUEUE_STORAGE_SIZE (DISPLAY_QUEUE_ITEM_SIZE * DISPLAY_QUEUE_ITEMS)
+#define DISPLAY_QUEUE_STORAGE_SIZE \
+    (DISPLAY_QUEUE_ITEM_SIZE * DISPLAY_QUEUE_ITEMS)
 
 static void display_task_func(void* ctx)
 {
     display_task_ctx_t* task_ctx = (display_task_ctx_t*)ctx;
 
     display_manager_t manager;
-    ATLAS_LOG_ON_ERR(DISPLAY_TASK_NAME, display_manager_initialize(&manager, &task_ctx->config));
+    ATLAS_LOG_ON_ERR(DISPLAY_TASK_NAME,
+                     display_manager_initialize(&manager, &task_ctx->config));
 
     while (1) {
         ATLAS_LOG_ON_ERR(DISPLAY_TASK_NAME, display_manager_process(&manager));

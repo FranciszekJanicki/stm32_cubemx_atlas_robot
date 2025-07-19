@@ -17,7 +17,8 @@ static void button_task_func(void* ctx)
     button_task_ctx_t* task_ctx = (button_task_ctx_t*)ctx;
 
     button_manager_t manager;
-    ATLAS_LOG_ON_ERR(BUTTON_TASK_NAME, button_manager_initialize(&manager, &task_ctx->config));
+    ATLAS_LOG_ON_ERR(BUTTON_TASK_NAME,
+                     button_manager_initialize(&manager, &task_ctx->config));
 
     while (1) {
         ATLAS_LOG_ON_ERR(BUTTON_TASK_NAME, button_manager_process(&manager));
@@ -73,7 +74,10 @@ atlas_err_t button_task_initialize(button_task_ctx_t* task_ctx)
 void button_task_press_callback(button_type_t type)
 {
     BaseType_t task_woken = pdFALSE;
-    xTaskNotifyFromISR(task_manager_get(TASK_TYPE_BUTTON), 1 << type, eSetBits, &task_woken);
+    xTaskNotifyFromISR(task_manager_get(TASK_TYPE_BUTTON),
+                       1 << type,
+                       eSetBits,
+                       &task_woken);
 
     portYIELD_FROM_ISR(task_woken);
 }

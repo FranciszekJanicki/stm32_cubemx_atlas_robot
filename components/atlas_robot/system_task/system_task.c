@@ -19,11 +19,13 @@ static void system_task_func(void* ctx)
     system_task_ctx_t* task_ctx = (system_task_ctx_t*)ctx;
 
     system_manager_t system_manager;
-    ATLAS_LOG_ON_ERR(SYSTEM_TASK_NAME,
-                     system_manager_initialize(&system_manager, &task_ctx->config));
+    ATLAS_LOG_ON_ERR(
+        SYSTEM_TASK_NAME,
+        system_manager_initialize(&system_manager, &task_ctx->config));
 
     while (1) {
-        ATLAS_LOG_ON_ERR(SYSTEM_TASK_NAME, system_manager_process(&system_manager));
+        ATLAS_LOG_ON_ERR(SYSTEM_TASK_NAME,
+                         system_manager_process(&system_manager));
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }

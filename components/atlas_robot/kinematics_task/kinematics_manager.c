@@ -14,31 +14,41 @@ static inline bool kinematics_manager_has_kinematics_event()
     return uxQueueMessagesWaiting(queue_manager_get(QUEUE_TYPE_KINEMATICS));
 }
 
-static inline bool kinematics_manager_send_system_event(system_event_t const* event)
+static inline bool kinematics_manager_send_system_event(
+    system_event_t const* event)
 {
     ATLAS_ASSERT(event);
 
-    return xQueueSend(queue_manager_get(QUEUE_TYPE_SYSTEM), event, pdMS_TO_TICKS(1)) == pdPASS;
+    return xQueueSend(queue_manager_get(QUEUE_TYPE_SYSTEM),
+                      event,
+                      pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static inline bool kinematics_manager_send_system_notify(system_notify_t notify)
 {
-    return xTaskNotify(task_manager_get(TASK_TYPE_SYSTEM), notify, eSetBits) == pdPASS;
-}
-
-static inline bool kinematics_manager_receive_kinematics_event(kinematics_event_t* event)
-{
-    ATLAS_ASSERT(event);
-
-    return xQueueReceive(queue_manager_get(QUEUE_TYPE_KINEMATICS), event, pdMS_TO_TICKS(1)) ==
+    return xTaskNotify(task_manager_get(TASK_TYPE_SYSTEM), notify, eSetBits) ==
            pdPASS;
 }
 
-static inline bool kinematics_manager_receive_kinematics_notify(kinematics_notify_t* notify)
+static inline bool kinematics_manager_receive_kinematics_event(
+    kinematics_event_t* event)
+{
+    ATLAS_ASSERT(event);
+
+    return xQueueReceive(queue_manager_get(QUEUE_TYPE_KINEMATICS),
+                         event,
+                         pdMS_TO_TICKS(1)) == pdPASS;
+}
+
+static inline bool kinematics_manager_receive_kinematics_notify(
+    kinematics_notify_t* notify)
 {
     ATLAS_ASSERT(notify);
 
-    return xTaskNotifyWait(0, KINEMATICS_NOTIFY_ALL, (uint32_t*)notify, pdMS_TO_TICKS(1)) == pdPASS;
+    return xTaskNotifyWait(0,
+                           KINEMATICS_NOTIFY_ALL,
+                           (uint32_t*)notify,
+                           pdMS_TO_TICKS(1)) == pdPASS;
 }
 
 static atlas_cartesian_data_t kinematics_manager_joints_to_cartesian_data(
@@ -46,8 +56,9 @@ static atlas_cartesian_data_t kinematics_manager_joints_to_cartesian_data(
 {
     ATLAS_ASSERT(joints_data);
 
-    return (atlas_cartesian_data_t){.position = {.x = 0.0F, .y = 0.0F, .z = 0.0F},
-                                    .orientation = {.x = 0.0F, .y = 0.0F, .z = 0.0F}};
+    return (atlas_cartesian_data_t){
+        .position = {.x = 0.0F, .y = 0.0F, .z = 0.0F},
+        .orientation = {.x = 0.0F, .y = 0.0F, .z = 0.0F}};
 }
 
 static atlas_joints_data_t kinematics_manager_cartesian_to_joints_data(
@@ -62,7 +73,8 @@ static atlas_joints_data_t kinematics_manager_cartesian_to_joints_data(
     position += step;
 
     return (atlas_joints_data_t){
-        .positions = {position, position, position, position, position, position}};
+        .positions =
+            {position, position, position, position, position, position}};
 }
 
 static atlas_cartesian_path_t kinematics_manager_joints_to_cartesian_path(
@@ -74,7 +86,8 @@ static atlas_cartesian_path_t kinematics_manager_joints_to_cartesian_path(
 
     for (uint8_t point = 0U; point < ATLAS_JOINTS_PATH_MAX_POINTS; ++point) {
         cartesian_path.points[point] =
-            kinematics_manager_joints_to_cartesian_data(&joints_path->points[point]);
+            kinematics_manager_joints_to_cartesian_data(
+                &joints_path->points[point]);
     }
 
     return cartesian_path;
@@ -88,8 +101,8 @@ static atlas_joints_path_t kinematics_manager_cartesian_to_joints_path(
     atlas_joints_path_t joints_path = {};
 
     for (uint8_t point = 0U; point < ATLAS_CARTESIAN_PATH_MAX_POINTS; ++point) {
-        joints_path.points[point] =
-            kinematics_manager_cartesian_to_joints_data(&cartesian_path->points[point]);
+        joints_path.points[point] = kinematics_manager_cartesian_to_joints_data(
+            &cartesian_path->points[point]);
     }
 
     return joints_path;
@@ -145,12 +158,14 @@ static atlas_err_t kinematics_manager_event_robot_data_handler(
         case ATLAS_ROBOT_DATA_TYPE_CARTESIAN: {
             event.payload.robot_data.type = ATLAS_ROBOT_DATA_TYPE_JOINTS;
             event.payload.robot_data.payload.joints =
-                kinematics_manager_cartesian_to_joints_data(&robot_data->payload.cartesian);
+                kinematics_manager_cartesian_to_joints_data(
+                    &robot_data->payload.cartesian);
         }
         case ATLAS_ROBOT_DATA_TYPE_JOINTS: {
             event.payload.robot_data.type = ATLAS_ROBOT_DATA_TYPE_CARTESIAN;
             event.payload.robot_data.payload.cartesian =
-                kinematics_manager_joints_to_cartesian_data(&robot_data->payload.joints);
+                kinematics_manager_joints_to_cartesian_data(
+                    &robot_data->payload.joints);
         }
         default: {
             event.payload.robot_data.type = ATLAS_ROBOT_DATA_TYPE_NONE;
@@ -182,12 +197,14 @@ static atlas_err_t kinematics_manager_event_robot_path_handler(
         case ATLAS_ROBOT_PATH_TYPE_CARTESIAN: {
             event.payload.robot_path.type = ATLAS_ROBOT_PATH_TYPE_JOINTS;
             event.payload.robot_path.payload.joints =
-                kinematics_manager_cartesian_to_joints_path(&robot_path->payload.cartesian);
+                kinematics_manager_cartesian_to_joints_path(
+                    &robot_path->payload.cartesian);
         } break;
         case ATLAS_ROBOT_PATH_TYPE_JOINTS: {
             event.payload.robot_path.type = ATLAS_ROBOT_PATH_TYPE_CARTESIAN;
             event.payload.robot_path.payload.cartesian =
-                kinematics_manager_joints_to_cartesian_path(&robot_path->payload.joints);
+                kinematics_manager_joints_to_cartesian_path(
+                    &robot_path->payload.joints);
         } break;
         default: {
             event.payload.robot_path.type = ATLAS_ROBOT_PATH_TYPE_NONE;
@@ -201,31 +218,40 @@ static atlas_err_t kinematics_manager_event_robot_path_handler(
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t kinematics_manager_notify_handler(kinematics_manager_t* manager,
-                                                     kinematics_notify_t notify)
+static atlas_err_t kinematics_manager_notify_handler(
+    kinematics_manager_t* manager,
+    kinematics_notify_t notify)
 {
     ATLAS_ASSERT(manager);
 
     return ATLAS_ERR_OK;
 }
 
-static atlas_err_t kinematics_manager_event_handler(kinematics_manager_t* manager,
-                                                    kinematics_event_t const* event)
+static atlas_err_t kinematics_manager_event_handler(
+    kinematics_manager_t* manager,
+    kinematics_event_t const* event)
 {
     ATLAS_ASSERT(manager && event);
 
     switch (event->type) {
         case KINEMATICS_EVENT_TYPE_START: {
-            return kinematics_manager_event_start_handler(manager, &event->payload.start);
+            return kinematics_manager_event_start_handler(
+                manager,
+                &event->payload.start);
         }
         case KINEMATICS_EVENT_TYPE_STOP: {
-            return kinematics_manager_event_stop_handler(manager, &event->payload.stop);
+            return kinematics_manager_event_stop_handler(manager,
+                                                         &event->payload.stop);
         }
         case KINEMATICS_EVENT_TYPE_ROBOT_DATA: {
-            return kinematics_manager_event_robot_data_handler(manager, &event->payload.robot_data);
+            return kinematics_manager_event_robot_data_handler(
+                manager,
+                &event->payload.robot_data);
         }
         case KINEMATICS_EVENT_TYPE_ROBOT_PATH: {
-            return kinematics_manager_event_robot_path_handler(manager, &event->payload.robot_path);
+            return kinematics_manager_event_robot_path_handler(
+                manager,
+                &event->payload.robot_path);
         }
         default: {
             return ATLAS_ERR_UNKNOWN_EVENT;
@@ -259,7 +285,8 @@ atlas_err_t kinematics_manager_initialize(kinematics_manager_t* manager,
 
     manager->is_running = false;
 
-    if (!kinematics_manager_send_system_notify(SYSTEM_NOTIFY_KINEMATICS_READY)) {
+    if (!kinematics_manager_send_system_notify(
+            SYSTEM_NOTIFY_KINEMATICS_READY)) {
         return ATLAS_ERR_FAIL;
     }
 

@@ -10,12 +10,14 @@ static atlas_err_t hmi_screen_menu_deinitialize(hmi_screen_menu_t* screen_menu)
     ATLAS_ASSERT(screen_menu);
 }
 
-static atlas_err_t hmi_screen_program_initialize(hmi_screen_program_t* screen_program)
+static atlas_err_t hmi_screen_program_initialize(
+    hmi_screen_program_t* screen_program)
 {
     ATLAS_ASSERT(screen_program);
 }
 
-static atlas_err_t hmi_screen_program_deinitialize(hmi_screen_program_t* screen_program)
+static atlas_err_t hmi_screen_program_deinitialize(
+    hmi_screen_program_t* screen_program)
 {
     ATLAS_ASSERT(screen_program);
 }
