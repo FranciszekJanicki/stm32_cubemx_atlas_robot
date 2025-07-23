@@ -19,6 +19,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void HAL_UART_TxComplete_Callback(UART_HandleTypeDef* huart)
 {
     if (huart->Instance == USART2) {
-        uart_task_transmit_complete_callback(task_manager_get(TASK_TYPE_UART));
+        uart_task_transmit_done_callback();
     }
 }

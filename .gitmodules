@@ -1,12 +1,3 @@
-[submodule "components/atlas_core"]
-	path = components/atlas_core
-	url = git@github.com:FranciszekJanicki/atlas_core.git
-[submodule "components/sh1107"]
-	path = components/sh1107
-	url = git@github.com:FranciszekJanicki/sh1107.git
-[submodule "components/handle_manager"]
-	path = components/handle_manager
-	url = git@github.com:FranciszekJanicki/handle_manager.git
-[submodule "components/uart_task"]
-	path = components/uart_task
-	url = git@github.com:FranciszekJanicki/uart_task.git
+[submodule "/home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/third_party/eigen"]
+	path = /home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/third_party/eigen
+	url = git@github.com:PX4/eigen.git

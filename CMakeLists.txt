@@ -4,6 +4,11 @@ include("cubemx/cmake/gcc-arm-none-eabi.cmake")
 
 project(${PROJECT_NAME} LANGUAGES C CXX ASM)
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(BLA_VENDOR "" CACHE STRING "" FORCE)
+set(BLAS_LIBRARIES "" CACHE STRING "" FORCE)
+set(LAPACK_LIBRARIES "" CACHE STRING "" FORCE)
+
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
@@ -16,7 +21,7 @@ set(PROJECT_DIR ${CMAKE_SOURCE_DIR})
 set(MAIN_DIR ${PROJECT_DIR}/main)
 set(COMPONENTS_DIR ${PROJECT_DIR}/components)
 set(THIRD_PARTY_DIR ${PROJECT_DIR}/third_party)
-set(STM32_CUBEMX_DIR ${PROJECT_DIR}/cubemx)
+set(CUBEMX_DIR ${PROJECT_DIR}/cubemx/cmake/stm32cubemx)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
@@ -29,10 +34,10 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-add_subdirectory(main)
-add_subdirectory(components)
-add_subdirectory(third_party)
-add_subdirectory(cubemx/cmake/stm32cubemx)
+add_subdirectory(${MAIN_DIR})
+add_subdirectory(${COMPONENTS_DIR})
+add_subdirectory(${THIRD_PARTY_DIR})
+add_subdirectory(${CUBEMX_DIR})
 
 target_compile_options(stm32cubemx INTERFACE
     -w
