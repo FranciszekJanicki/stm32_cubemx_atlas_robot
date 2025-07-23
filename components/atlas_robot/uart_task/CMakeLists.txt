@@ -1,30 +1,19 @@
-add_subdirectory(common)
-add_subdirectory(hmi_task)
-add_subdirectory(system_task)
-add_subdirectory(packet_task)
-add_subdirectory(uart_task)
-add_subdirectory(kinematics_task)
+add_library(uart_task STATIC)
 
-add_library(atlas_robot STATIC)
+target_sources(uart_task PRIVATE 
+    uart_task.c
+)  
 
-target_sources(atlas_robot PRIVATE 
-    atlas_robot.c
-)
-
-target_include_directories(atlas_robot PUBLIC 
+target_include_directories(uart_task PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(atlas_robot PUBLIC 
+target_link_libraries(uart_task PUBLIC 
+    bus_task
     common
-    hmi_task
-    kinematics_task
-    packet_task
-    system_task
-    uart_task
 )
 
-target_compile_options(atlas_robot PUBLIC
+target_compile_options(uart_task PUBLIC
     -std=c23
     -Wall
     -Wextra

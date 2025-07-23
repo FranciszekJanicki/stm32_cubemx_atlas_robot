@@ -2,11 +2,11 @@
 #define COMMON_MANAGER_H
 
 #include "FreeRTOS.h"
-#include "handle_manager.h"
 #include "queue.h"
 #include "semphr.h"
 #include "stream_buffer.h"
 #include "task.h"
+#include "utility.h"
 
 typedef enum {
     TASK_TYPE_SYSTEM,
@@ -41,15 +41,15 @@ typedef enum {
     SEMAPHORE_TYPE_NUM,
 } SemaphoreType_t;
 
-DECLARE_HANDLE_MANAGER(task, TaskType_t, TaskHandle_t, TASK_TYPE_NUM)
-DECLARE_HANDLE_MANAGER(queue, QueueType_t, QueueHandle_t, QUEUE_TYPE_NUM)
-DECLARE_HANDLE_MANAGER(stream_buffer,
-                       StreamBufferType_t,
-                       StreamBufferHandle_t,
-                       STREAM_BUFFER_TYPE_NUM)
-DECLARE_HANDLE_MANAGER(semaphore,
-                       SemaphoreType_t,
-                       SemaphoreHandle_t,
-                       SEMAPHORE_TYPE_NUM)
+DECLARE_MANAGER(task, TaskType_t, TaskHandle_t, TASK_TYPE_NUM)
+DECLARE_MANAGER(queue, QueueType_t, QueueHandle_t, QUEUE_TYPE_NUM)
+DECLARE_MANAGER(stream_buffer,
+                StreamBufferType_t,
+                StreamBufferHandle_t,
+                STREAM_BUFFER_TYPE_NUM)
+DECLARE_MANAGER(semaphore,
+                SemaphoreType_t,
+                SemaphoreHandle_t,
+                SEMAPHORE_TYPE_NUM)
 
 #endif // COMMON_MANAGER_H

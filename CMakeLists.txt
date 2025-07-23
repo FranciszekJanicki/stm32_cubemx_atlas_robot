@@ -34,10 +34,10 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-add_subdirectory(${MAIN_DIR})
-add_subdirectory(${COMPONENTS_DIR})
 add_subdirectory(${THIRD_PARTY_DIR})
 add_subdirectory(${CUBEMX_DIR})
+add_subdirectory(${COMPONENTS_DIR})
+add_subdirectory(${MAIN_DIR})
 
 target_compile_options(stm32cubemx INTERFACE
     -w

@@ -1,19 +1,20 @@
 #!/bin/bash
 set -e
 
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <submodule_url> <submodule_dir> <submodule_name> <submodule_action>"
+    exit 1
+fi
+
 SUBMODULE_URL="$1"
 SUBMODULE_DIR="$2"
 SUBMODULE_NAME="$3"
 SUBMODULE_ACTION="$4"
-SUBMODULE_PATH="$DIR/$NAME"
-
-function log_skip {
-    echo "Skipping $1: $SUBMODULE_NAME"
-}
+SUBMODULE_PATH="$SUBMODULE_DIR/$SUBMODULE_NAME"
 
 function add_submodule {
     if [ -d "$SUBMODULE_PATH" ]; then
-        log_skip "add (already exists)"
+        echo "Submodule $SUBMODULE_NAME already exists at $SUBMODULE_PATH" 
         return
     fi
 
@@ -23,7 +24,7 @@ function add_submodule {
 
 function remove_submodule {
     if [ ! -d "$SUBMODULE_PATH" ]; then
-        log_skip "remove (not found)"
+        echo "Submodule $SUBMODULE_NAME doesnt exist at $SUBMODULE_PATH"        
         return
     fi
 
@@ -36,7 +37,7 @@ function remove_submodule {
 
 function update_submodule {
     if [ ! -d "$SUBMODULE_PATH" ]; then
-        log_skip "update (not found)"
+        echo "Submodule $SUBMODULE_NAME doesnt exist at $SUBMODULE_PATH"
         return
     fi
 
@@ -44,13 +45,9 @@ function update_submodule {
     git submodule update --remote "$SUBMODULE_PATH"
 }
 
-if [ "$SUBMODULE_ACTION" = "add" ]; then
-    add_submodule "$SUBMODULE_URL" "$SUBMODULE_DIR" "$SUBMODULE_NAME"
-elif [ "$SUBMODULE_ACTION" = "remove" ]; then
-    remove_submodule "$SUBMODULE_DIR" "$SUBMODULE_NAME"
-elif [ "$SUBMODULE_ACTION" = "update" ]; then
-    update_submodule "$SUBMODULE_DIR" "$SUBMODULE_NAME"
-else
-    echo "Invalid action: $SUBMODULE_ACTION"
-    exit 1
-fi
+case "$SUBMODULE_ACTION" in
+    add) add_submodule ;;
+    remove) remove_submodule ;;
+    update) update_submodule ;;
+    *) echo "Invalid action: $SUBMODULE_ACTION"; exit 1 ;;
+esac

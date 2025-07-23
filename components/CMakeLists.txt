@@ -1,0 +1,10 @@
+file(GLOB THIRD_PARTY_DIRS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+
+foreach(comp ${THIRD_PARTY_DIRS})
+    if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${comp}")
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${comp}/CMakeLists.txt")
+            message(STATUS "Adding third_party component: ${comp}")
+            add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${comp}")
+        endif()
+    endif()
+endforeach()
