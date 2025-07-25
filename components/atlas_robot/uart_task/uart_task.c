@@ -7,13 +7,13 @@
 #include "task.h"
 #include "usart.h"
 
-#define UART_TASK_STACK_DEPTH (4096U / sizeof(StackType_t))
+#define UART_TASK_STACK_DEPTH (5000U / sizeof(StackType_t))
 #define UART_TASK_PRIORITY (1U)
 #define UART_TASK_NAME ("uart_task")
 
-#define UART_BUFFER_STORAGE_SIZE (1024U)
+#define UART_BUFFER_STORAGE_SIZE (1000U)
 
-#define UART_STREAM_BUFFER_STORAGE_SIZE (1024U)
+#define UART_STREAM_BUFFER_STORAGE_SIZE (1000U)
 #define UART_STREAM_BUFFER_TRIGGER (1U)
 
 static bus_err_t bus_task_bus_transmit_data(void* user,

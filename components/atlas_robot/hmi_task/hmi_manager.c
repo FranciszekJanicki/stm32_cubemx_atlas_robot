@@ -79,6 +79,8 @@ static atlas_err_t hmi_manager_event_start_handler(
 
     if (manager->is_button_ready) {
         button_event_t event = {.type = BUTTON_EVENT_TYPE_START};
+        event.payload.start = (button_event_payload_start_t){};
+
         if (!hmi_manager_send_button_event(&event)) {
             return ATLAS_ERR_FAIL;
         }
@@ -86,6 +88,8 @@ static atlas_err_t hmi_manager_event_start_handler(
 
     if (manager->is_display_ready) {
         display_event_t event = {.type = DISPLAY_EVENT_TYPE_START};
+        event.payload.start = (display_event_payload_start_t){};
+
         if (!hmi_manager_send_display_event(&event)) {
             return ATLAS_ERR_FAIL;
         }
@@ -108,14 +112,18 @@ static atlas_err_t hmi_manager_event_stop_handler(
     }
 
     {
-        button_event_t event = {.type = BUTTON_EVENT_TYPE_START};
+        button_event_t event = {.type = BUTTON_EVENT_TYPE_STOP};
+        event.payload.stop = (button_event_payload_stop_t){};
+
         if (!hmi_manager_send_button_event(&event)) {
             return ATLAS_ERR_FAIL;
         }
     }
 
     {
-        display_event_t event = {.type = DISPLAY_EVENT_TYPE_START};
+        display_event_t event = {.type = DISPLAY_EVENT_TYPE_STOP};
+        event.payload.stop = (display_event_payload_stop_t){};
+
         if (!hmi_manager_send_display_event(&event)) {
             return ATLAS_ERR_FAIL;
         }
@@ -219,6 +227,8 @@ static atlas_err_t hmi_manager_notify_display_ready_handler(
 
     if (manager->is_running) {
         display_event_t event = {.type = DISPLAY_EVENT_TYPE_START};
+        event.payload.start = (display_event_payload_start_t){};
+
         if (!hmi_manager_send_display_event(&event)) {
             return ATLAS_ERR_FAIL;
         }
@@ -236,6 +246,8 @@ static atlas_err_t hmi_manager_notify_button_ready_handler(
 
     if (manager->is_running) {
         button_event_t event = {.type = BUTTON_EVENT_TYPE_START};
+        event.payload.start = (button_event_payload_start_t){};
+
         if (!hmi_manager_send_button_event(&event)) {
             return ATLAS_ERR_FAIL;
         }

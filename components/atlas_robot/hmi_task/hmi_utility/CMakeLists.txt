@@ -1,25 +1,20 @@
-add_subdirectory(button_task)
-add_subdirectory(display_task)
-add_subdirectory(hmi_utility)
+add_library(hmi_utility STATIC)
 
-add_library(hmi_task STATIC)
-
-target_sources(hmi_task PRIVATE 
-    hmi_manager.c
-    hmi_task.c
+target_sources(hmi_utility PRIVATE 
+    hmi_state.c
 )
 
-target_include_directories(hmi_task PUBLIC 
+target_include_directories(hmi_utility PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(hmi_task PUBLIC 
-    button_task
+target_link_libraries(hmi_utility PUBLIC 
     display_task
-    hmi_utility
+    common
+    button_task
 )
 
-target_compile_options(hmi_task PUBLIC
+target_compile_options(hmi_utility PUBLIC
     -std=c23
     -Wall
     -Wextra

@@ -3,8 +3,11 @@
 
 #include "common.h"
 #include "sh1107.h"
+#include "stm32l4xx_hal.h"
 
-typedef int display_config_t;
+typedef struct {
+    SPI_HandleTypeDef* sh1107_spi_bus;
+} display_config_t;
 
 typedef struct {
     bool is_running;

@@ -11,18 +11,28 @@
 
 typedef struct {
     TIM_HandleTypeDef* delta_timer;
+    RTC_HandleTypeDef* timestamp_rtc;
+#ifdef PACKET_TEST
+    TIM_HandleTypeDef* packet_ready_timer;
+#endif
+    GPIO_TypeDef* delta_period_gpio;
+    uint16_t delta_period_pin;
 } system_config_t;
 
 typedef struct {
-    uint32_t timestamp;
     atlas_robot_state_t state;
-    atlas_joints_data_t data;
-    atlas_joints_path_t path;
-    size_t path_index;
+
+    atlas_joints_path_t current_path;
+    size_t current_path_index;
+
+    atlas_timestamp_t startup_timestamp;
+    atlas_timestamp_t current_timestamp;
 
     struct {
-        float32_t position;
-        
+        bool is_ready;
+        bool has_fault;
+        float32_t meas_position;
+        float32_t goal_position;
     } joint_ctxs[ATLAS_JOINT_NUM];
 
     system_config_t config;

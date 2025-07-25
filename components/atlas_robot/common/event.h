@@ -29,7 +29,7 @@ typedef enum {
 
 typedef struct {
     atlas_joint_num_t num;
-    atlas_joint_data_t data;
+    atlas_joint_measure_t data;
 } system_event_payload_joint_data_t;
 typedef struct {
     atlas_joint_num_t num;
@@ -43,10 +43,14 @@ typedef atlas_robot_data_t system_event_payload_robot_data_t;
 typedef atlas_robot_path_t system_event_payload_robot_path_t;
 typedef sd_save_path_t system_event_payload_save_path_t;
 typedef sd_load_path_t system_event_payload_load_path_t;
-typedef int system_event_payload_start_path_t;
-typedef int system_event_payload_stop_path_t;
-typedef int system_event_payload_start_jog_t;
-typedef int system_event_payload_stop_jog_t;
+typedef struct {
+} system_event_payload_start_path_t;
+typedef struct {
+} system_event_payload_stop_path_t;
+typedef struct {
+} system_event_payload_start_jog_t;
+typedef struct {
+} system_event_payload_stop_jog_t;
 
 typedef union {
     system_event_payload_joint_data_t joint_data;
@@ -75,8 +79,10 @@ typedef enum {
     KINEMATICS_EVENT_TYPE_ROBOT_PATH,
 } kinematics_event_type_t;
 
-typedef int kinematics_event_payload_start_t;
-typedef int kinematics_event_payload_stop_t;
+typedef struct {
+} kinematics_event_payload_start_t;
+typedef struct {
+} kinematics_event_payload_stop_t;
 typedef atlas_robot_data_t kinematics_event_payload_robot_data_t;
 typedef atlas_robot_path_t kinematics_event_payload_robot_path_t;
 
@@ -106,8 +112,10 @@ typedef enum {
     HMI_EVENT_TYPE_BUTTON_DATA,
 } hmi_event_type_t;
 
-typedef int hmi_event_payload_start_t;
-typedef int hmi_event_payload_stop_t;
+typedef struct {
+} hmi_event_payload_start_t;
+typedef struct {
+} hmi_event_payload_stop_t;
 typedef atlas_robot_data_t hmi_event_payload_robot_data_t;
 typedef atlas_robot_path_t hmi_event_payload_robot_path_t;
 typedef button_data_t hmi_event_payload_button_data_t;
@@ -134,8 +142,10 @@ typedef enum {
     PACKET_EVENT_TYPE_JOINT_DATA,
 } packet_event_type_t;
 
-typedef int packet_event_payload_start_t;
-typedef int packet_event_payload_stop_t;
+typedef struct {
+} packet_event_payload_start_t;
+typedef struct {
+} packet_event_payload_stop_t;
 typedef struct {
     atlas_joint_num_t num;
     atlas_joint_start_t start;
@@ -146,7 +156,7 @@ typedef struct {
 } packet_event_payload_joint_stop_t;
 typedef struct {
     atlas_joint_num_t num;
-    atlas_joint_data_t data;
+    atlas_joint_reference_t data;
 } packet_event_payload_joint_data_t;
 
 typedef union {
@@ -168,8 +178,10 @@ typedef enum {
     BUTTON_EVENT_TYPE_BUTTON_DATA,
 } button_event_type_t;
 
-typedef int button_event_payload_start_t;
-typedef int button_event_payload_stop_t;
+typedef struct {
+} button_event_payload_start_t;
+typedef struct {
+} button_event_payload_stop_t;
 typedef button_data_t button_event_payload_button_data_t;
 
 typedef union {
@@ -190,8 +202,10 @@ typedef enum {
     DISPLAY_EVENT_TYPE_ROBOT_PATH,
 } display_event_type_t;
 
-typedef int display_event_payload_start_t;
-typedef int display_event_payload_stop_t;
+typedef struct {
+} display_event_payload_start_t;
+typedef struct {
+} display_event_payload_stop_t;
 typedef atlas_robot_data_t display_event_payload_robot_data_t;
 typedef atlas_robot_path_t display_event_payload_robot_path_t;
 
@@ -214,8 +228,10 @@ typedef enum {
     SD_EVENT_TYPE_SAVE_PATH,
 } sd_event_type_t;
 
-typedef int sd_event_payload_start_t;
-typedef int sd_event_payload_stop_t;
+typedef struct {
+} sd_event_payload_start_t;
+typedef struct {
+} sd_event_payload_stop_t;
 typedef sd_load_path_t sd_event_payload_load_path_t;
 typedef sd_save_path_t sd_event_payload_save_path_t;
 

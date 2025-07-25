@@ -1,12 +1,12 @@
-[submodule "components/atlas_core"]
-	path = components/atlas_core
+[submodule "/home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/atlas_core"]
+	path = /home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/atlas_core
 	url = git@github.com:FranciszekJanicki/atlas_core.git
-[submodule "components/sh1107"]
-	path = components/sh1107
+[submodule "/home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/sh1107"]
+	path = /home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/sh1107
 	url = git@github.com:FranciszekJanicki/sh1107.git
-[submodule "components/bus_task"]
-	path = components/bus_task
+[submodule "/home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/bus_task"]
+	path = /home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/bus_task
 	url = git@github.com:FranciszekJanicki/bus_task.git
-[submodule "components/utility"]
-	path = components/utility
+[submodule "/home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/utility"]
+	path = /home/franek/Documents/stm32_cubemx/stm32l476rg/stm32_cubemx_atlas_robot/components/utility
 	url = git@github.com:FranciszekJanicki/utility.git
