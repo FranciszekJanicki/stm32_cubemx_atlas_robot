@@ -100,15 +100,22 @@ static inline bool packet_manager_send_joint_packet(
 
     atlas_joint_packet_encode(packet, &buffer);
 
+    atlas_checksum_t checksum;
+    atlas_checksum_calculate(buffer,
+                             sizeof(buffer) - sizeof(atlas_checksum_t),
+                             &checksum);
+
     packet_manager_set_joint_chip_select_pin(manager, num, false);
     bool result =
         packet_manager_packet_spi_transmit(manager, buffer, sizeof(buffer));
     packet_manager_set_joint_chip_select_pin(manager, num, true);
 
-    if (result) {
-        packet_manager_set_joint_packet_ready_pin(manager, num, false);
-        packet_manager_set_joint_packet_ready_pin(manager, num, true);
+    if (!result) {
+        return false;
     }
+
+    packet_manager_set_joint_packet_ready_pin(manager, num, false);
+    packet_manager_set_joint_packet_ready_pin(manager, num, true);
 
     return result;
 }
@@ -127,9 +134,18 @@ static inline bool packet_manager_receive_robot_packet(
         packet_manager_packet_spi_receive(manager, buffer, sizeof(buffer));
     packet_manager_set_joint_chip_select_pin(manager, num, true);
 
+    if (!result) {
+        return false;
+    }
+
     atlas_robot_packet_decode(&buffer, packet);
 
-    return result;
+    atlas_checksum_t checksum;
+    atlas_checksum_calculate(buffer,
+                             sizeof(buffer) - sizeof(atlas_checksum_t),
+                             &checksum);
+
+    return checksum == packet->checksum;
 }
 
 static atlas_err_t packet_manager_packet_joint_measure_handler(
