@@ -1,17 +1,12 @@
 Checks: >
   clang-analyzer-*,
-  bugprone-*,
+  modernize-*,
   performance-*,
   portability-*,
   readability-*,
+  bugprone-*,
   -readability-magic-numbers,
-  -readability-uppercase-literal-suffix,
-  -bugprone-easily-swappable-parameters
-  
-WarningsAsErrors: ''
 
+WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 FormatStyle: file
-
-ExtraArgs:
-  - -std=c23
